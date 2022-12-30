@@ -79,29 +79,30 @@ const App = () => {
         <div>
             <Header />
                 <div className="main-contianer">
-                    <div style={{ width: "15%", float: "left" }}>
+                    <div style={{ height: "100%", width: "15%", float: "left" }}>
                     <Nav
                         selectedKey={location.pathname === '/' ? 'Home' : location.pathname.slice(1)}
                         groups={navLinkGroups}
                         />
                     </div>
-                    <Routes>
-                        <Route
-                            path='/'
-                            element={<Home />}
-                        />
+                    <div style={{ marginLeft: "20%", paddingTop: "5px" }}>
+                        <Routes>
+                            <Route
+                                path='/'
+                                element={<Home />}
+                            />
 
-                        <Route
-                            path= '/MyCloset'
-                            element= {<MyCloset/>}
-                        />
+                            <Route
+                                path='/MyCloset'
+                                element={<MyCloset />}
+                            />
 
-                        <Route
-                            path='/AddContent'
-                            element= {<AddContentForm/>}
-                        />
-                    </Routes>
-                    
+                            <Route
+                                path='/AddContent'
+                                element={<AddContentForm />}
+                            />
+                        </Routes>
+                    </div>
                 </div>
             </div>
         
