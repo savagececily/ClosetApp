@@ -1,12 +1,19 @@
 ﻿import '../custom.css';
-import { Text, Stack, Separator, Image, IImageProps, ImageFit } from '@fluentui/react';
+import {
+    Text,
+    Stack,
+    Image,
+    IImageProps,
+    ImageFit
+} from '@fluentui/react';
 
+// TODO: show the actual image
 
-const ClothingCard = () => {
+const ClothingCard = ({ clothingItem }) => {
 
     const imageProps: IImageProps = {
         imageFit: ImageFit.cover,
-        src: 'https://via.placeholder.com/200x200.png?text=Clothing',
+        src: 'https://via.placeholder.com/200x200.png?text=NoImage',
     };
 
     return (
@@ -14,14 +21,12 @@ const ClothingCard = () => {
             <div className='clothing-card'>
                 <Stack>
                     <div>
-                        <Image {...imageProps} />
+                        <Image {...imageProps} src={clothingItem.ImageLink } />
                     </div>
                     <div>
-                        <Text variant={'large'} block> Name of Item</Text>
-                        <Text block>Description of Item</Text>
-                        <Text>#Tags #Go #Here</Text>
+                        <Text variant={'large'} block> {clothingItem.Title}</Text>
+                        <Text block>{clothingItem.Description}</Text>                        
                     </div>
-                    
                 </Stack>
             </div>
         </>

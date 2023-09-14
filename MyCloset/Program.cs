@@ -1,10 +1,20 @@
 ﻿using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using MyCloset.Models;
+using Microsoft.Extensions.DependencyInjection;
+using MyCloset;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<MyClosetAppDbContext>(options =>
+    options.UseSqlServer( builder.Configuration.GetConnectionString("YourConnectionStringName")));
+
+builder.Services.AddTransient<IMyClosetService, MyClosetService>();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -19,10 +29,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapFallbackToFile("index.html");;
 
@@ -37,4 +49,3 @@ app.UseSpa(spa =>
         spa.UseReactDevelopmentServer(npmScript: "start");
     }
 });
-

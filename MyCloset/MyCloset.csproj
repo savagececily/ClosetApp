@@ -11,11 +11,24 @@
     <SpaProxyServerUrl>https://localhost:44417</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.12" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
+    <PackageReference Include="Microsoft.AspNet.Identity.Owin" Version="2.2.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,11 +38,27 @@
     <None Remove="ClientApp\src\components\" />
     <None Remove="Controllers\" />
     <None Remove="Microsoft.AspNetCore.SpaServices.Extensions" />
+    <None Remove="ClientApp\src\Models\" />
+    <None Remove="Swashbuckle.AspNetCore" />
+    <None Remove="Models\" />
+    <None Remove="Microsoft.EntityFrameworkCore" />
+    <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
+    <None Remove="ClientApp\src\Pages\" />
+    <None Remove="Microsoft.EntityFrameworkCore.Design" />
+    <None Remove="RequestModels\" />
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="Microsoft.AspNetCore.Identity" />
+    <None Remove="Microsoft.AspNet.Identity.EntityFramework" />
+    <None Remove="Microsoft.AspNet.Identity.Owin" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ClientApp\src\components\" />
     <Folder Include="Controllers\" />
+    <Folder Include="ClientApp\src\Models\" />
+    <Folder Include="Models\" />
+    <Folder Include="ClientApp\src\Pages\" />
+    <Folder Include="RequestModels\" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

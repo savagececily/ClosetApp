@@ -1,6 +1,8 @@
-﻿import { MyCloset } from './components/MyCloset';
-import { AddContentForm } from './components/AddContentForm';
-import { Home } from "./components/Home";
+﻿import Home from './Pages/Home';
+import ItemForm from './Pages/ItemForm';
+import Style from './Pages/Outfits';
+import Friends from '/Pages/Friends';
+import Account from 'Pages/Account';
 
 const AppRoutes = [
     {
@@ -8,12 +10,20 @@ const AppRoutes = [
         element: <Home />
     },
     {
-        path: '/MyCloset',
-        element: <MyCloset />
+        path: '/Outfits',
+        element: <Outfits />
     },
     {
-        path: '/AddContent',
-        element: <AddContentForm />
+        path: '/AddItem',
+        element: <ItemForm/>
+    },
+    {
+        path: '/MyFriends',
+        element: <Friends/>
+    },
+    {
+        path: '/Account',
+        element: <Account/>
     }
 ];
 
