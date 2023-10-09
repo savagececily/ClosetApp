@@ -32,12 +32,9 @@
     "workbox-range-requests": "^6.5.3",
     "workbox-routing": "^6.5.3",
     "workbox-strategies": "^6.5.3",
-    "workbox-streams": "^6.5.3",
-    "rollup-plugin-terser": "^7.0.2",
-    "w3c-hr-time": "^1.0.2",
-    "sourcemap-codec": "^1.4.8",
-    "svgo": "^2.0.0"
+    "workbox-streams": "^6.5.3"
   },
+
   "devDependencies": {
     "ajv": "^8.11.0",
     "cross-env": "^7.0.3",
@@ -62,7 +59,7 @@
     "prestart": "node aspnetcore-https && node aspnetcore-react",
     "start": "rimraf ./build && react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "test": "cross-env CI=false react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint ./src/"
   },
