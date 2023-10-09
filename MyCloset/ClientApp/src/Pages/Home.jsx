@@ -8,12 +8,15 @@ import { Stack, PrimaryButton, DefaultButton } from '@fluentui/react';
 
 
 const Home = () => {
-    const [user, setUser] = useState({ Id: 'fake id', DisplayName: 'FakeUser', Email: 'FakeUser@faker.com' });
+    const [user, setUser] = useState({ Id: 'e85865f7-3c93-4edf-be81-c9dd8c048008', DisplayName: 'FakeUser', Email: 'FakeUser@faker.com' });
     //const [user, setUser] = useState();
 
+    const handleLogin = () => {
+
+    }
     return (
         <>
-            {user ?
+            {user && user.Id ?
                 <Closet user = { user } /> :
                 <Stack>
                     <PrimaryButton text="Create Account" />

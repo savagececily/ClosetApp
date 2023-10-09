@@ -16,21 +16,32 @@ const SideNav = ({location}) => {
                     name: 'My Closet',
                     url: '/',
                     key: 'MyCloset',
+                    links: [
+                        {
+                            name: 'New Item',
+                            url: '/AddItem/true',
+                            key: 'NewItem',
+                        },
+                        {
+                            name: 'My Outfits',
+                            url: '/Outfits',
+                            key: 'Outfits',
+                            disabled:true
+                        },
+                        {
+                            name: 'New Outfit',
+                            url: '/NewOutfit',
+                            key: 'NewOutif',
+                            disabled:true
+                        },
+
+                    ],
                 },
-                {
-                    name: 'My Outfits',
-                    url: '/Outfits',
-                    key: 'Outfits',
-                },
-                //{
-                  //  name: 'Add Item',
-                   // url: '/AddItem',
-                   // key: 'AddItem',
-                //},
                 {
                     name: 'My Friends',
                     url: '/Friends',
                     key: 'MyFriends',
+                    disabled: true
                 },
                 {
                     name: 'My Account',

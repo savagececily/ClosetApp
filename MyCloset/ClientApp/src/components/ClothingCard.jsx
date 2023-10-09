@@ -1,36 +1,52 @@
-﻿import '../custom.css';
+﻿import React, { useState } from 'react';
 import {
-    Text,
     Stack,
     Image,
     IImageProps,
-    ImageFit
+    Checkbox,
+    Text,
 } from '@fluentui/react';
 
-// TODO: show the actual image
+const ClothingCard = ({ clothingItem, onSelect, isSelected }) => {
+    const [isChecked, setIsChecked] = useState(isSelected);
 
-const ClothingCard = ({ clothingItem }) => {
+    const handleCardClick = () => {
+        setIsChecked(!isChecked);
+        onSelect(clothingItem.Id, !isChecked); // Pass the card ID and new selection state to the parent component
+    };
 
     const imageProps: IImageProps = {
-        imageFit: ImageFit.cover,
-        src: 'https://via.placeholder.com/200x200.png?text=NoImage',
+        imageFit: 'cover',
+        src: clothingItem.Image || 'https://via.placeholder.com/200x200.png?text=NoImage',
     };
 
     return (
-        <>
-            <div className='clothing-card'>
-                <Stack>
-                    <div>
-                        <Image {...imageProps} src={clothingItem.ImageLink } />
-                    </div>
-                    <div>
-                        <Text variant={'large'} block> {clothingItem.Title}</Text>
-                        <Text block>{clothingItem.Description}</Text>                        
-                    </div>
-                </Stack>
-            </div>
-        </>
-
+        <Stack
+            horizontalAlign="center"
+            verticalAlign="center"
+            styles={{
+                root: {
+                    width: 300,
+                    marginBottom: 20,
+                    cursor: 'pointer',
+                    backgroundColor: isSelected ? '#f0f0f0' : 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    padding: '10px',
+                },
+            }}
+            onClick={handleCardClick}
+        >
+            <Image {...imageProps} />
+            <Text variant="large">{clothingItem.Title}</Text>
+            <Text>{clothingItem.Description}</Text>
+            <Text>{clothingItem.Tags}</Text>
+            <Checkbox
+                checked={isChecked}
+                onChange={handleCardClick}
+                label="Select"
+            />
+        </Stack>
     );
 };
 

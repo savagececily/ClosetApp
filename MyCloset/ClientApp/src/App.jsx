@@ -28,17 +28,18 @@ const App = () => {
                             element={<Outfits />}
                         />
                         <Route
-                            path='/AddItem'
-                            element={<ItemForm/>}
+                            path='/AddItem/:isNew'
+                            element={<ItemForm />}
                         />
                         <Route
                             path='/Friends'
-                            element={Friends}
+                            element={<Friends/>}
                         />
                         <Route
                             path='/Account'
-                            element={Account}
+                            element={<Account/>}
                         />
+                        <Route path="/swagger"/>
                     </Routes>
                 </div>
             </div>

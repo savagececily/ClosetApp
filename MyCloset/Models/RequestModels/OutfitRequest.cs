@@ -1,7 +1,7 @@
 ﻿using System;
 using MyCloset.Models;
 
-namespace MyCloset.RequestModels
+namespace MyCloset.Models.RequestModels
 {
     public class OutfitRequest
     {

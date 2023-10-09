@@ -1,4 +1,5 @@
-﻿import { React, useState, useCallback} from 'react';
+﻿import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../custom.css';
 import {
     TextField,
@@ -7,18 +8,17 @@ import {
     PrimaryButton,
     DefaultButton,
     Stack,
-    IStackTokens
+    IStackTokens,
+    Image,
+    IconButton
 } from '@fluentui/react';
-import ImageUploaderButton from '../components/ImageUploaderButton';
+import { useParams, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { saveClothingItem } from '../API/ClosetApi';
 
-const ItemFrom = (props: isNew) => {
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('');
-
-    const options: IDropdownOption[] = [
-        { key: 'Shirt', text: 'Shirt', disabled: true},
+    const categoryOptions: IDropdownOption[] = [
+        { key: 'Shirt', text: 'Shirt'},
         { key: 'pants', text: 'Pants' },
         { key: 'shorts', text: 'Shorts' },
         { key: 'skirts', text: 'Skirts' },
@@ -26,60 +26,185 @@ const ItemFrom = (props: isNew) => {
         { key: 'Shoes', text: 'Shoes' },
     ];
 
+    const tagOptions:IDropdownOption[] = [
+        { key: 'casual', text: 'Casual' },
+        { key: 'work', text: 'Work' },
+        { key: 'party', text: 'Party' },
+        { key: 'sexy', text: 'Sexy' },
+        { key: 'formal', text: 'Formal' },
+        { key: 'swimwear', text: 'Swimwear' },
+        { key: 'nightOut', text: 'Night Out' },
+        { key: 'athletic', text: 'Atheletic' },
+    ];
+
+const ItemForm = () => {
+
+    const navigate = useNavigate();
+    const { isNew } = useParams();
+    const location = useLocation();
+
+    const clothingItem = isNew ? null : location.state.clothingItem;
+
+    const defaultItem = {
+        id: isNew ? null : clothingItem.ClothingItemId,
+        title: isNew ? '' : clothingItem.Title,
+        description: isNew ? '' : clothingItem.Description,
+        category: isNew? '': clothingItem.Description,
+        image: isNew ? "https://via.placeholder.com/200x200.png?text=NoImag" : clothingItem.LinkToPhoto,
+        userId: isNew ? null : clothingItem.UserId,
+        tags: isNew ? [] : clothingItem.Tags,
+
+    };
+
+    const [item, setItem] = useState(isNew ? { ...defaultItem } : { ...clothingItem });
+    const [selectedKeys, setSelectedKeys] = useState([]);
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64Data = reader.result.split(',')[1]; // Extract Base64 data
+                setItem({ ...item, image: base64Data });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const stackTokens: IStackTokens = { childrenGap: 5 };
 
     const onTitleChange = (e) => {
-        setTitle(e.target.value);
+        setItem({ ...item, title: e.target.value });
     };
 
     const onDescriptionChange = (e) => {
-        setDescription(e.target.value);
+        setItem({ ...item, description: e.target.value });
     };
 
-    const onCategoryChange = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption) => {
-        setCategory(item.key);
+    const onCategoryChange = (event: React.FormEvent<HTMLDivElement>, categoryItem: IDropdownOption) => {
+        setItem(categoryItem.key);
+    };
+
+    //const onTagChange = (event: React.FormEvent<HTMLDivElement>, tagItem: IDropdownOption): void => {
+    //    if (tagItem) {
+    //        setSelectedKeys(
+    //            tagItem.selected ? [...selectedKeys, item.key] : selectedKeys.filter(key => key !== item.key),
+    //        );
+    //    }
+    //};
+
+    const onTagChange = (event, tagItem) => {
+        const updatedTags = [...selectedKeys]; // Create a copy of selected tags
+
+        if (tagItem.selected) {
+            // Add the selected tag key to the array
+            updatedTags.push(tagItem.key);
+        } else {
+            // Remove the deselected tag key from the array
+            const indexToRemove = updatedTags.indexOf(tagItem.key);
+            if (indexToRemove !== -1) {
+                updatedTags.splice(indexToRemove, 1);
+            }
+        }
+
+        // Update selectedKeys state
+        setSelectedKeys(updatedTags);
+        // Update the item object with the modified tags property
+        setItem({ ...item, tags: updatedTags });
     };
 
     const clearFields = () => {
-        setTitle('');
-        setDescription('');
-        setCategory('');
+        setItem({ ...defaultItem });
     };
 
-    const handleSubmit = () => {
-        // TODO: Add API Call
+    const submitDisabled = () => {
+        if (!item.title || !item.description || !item.category || !item.image) {
+            return true;
+        }
+        return false;
+    }
+
+    const handleSubmit = async () => {
+        if (!item.title || !item.description || !item.category || !item.image) {
+            toast.error('Please fill in all required fields and select an image.');
+            return;
+        }
+
+        try {
+            const response = await saveClothingItem(item);
+
+            if (response.success) {
+                toast.success(response.message);
+                navigate('/Home');
+            }
+            else {
+                toast.error(response.message);
+            }
+
+        } catch (error) {
+            toast.error('Oops something went wrong, please try again');
+        }
     };
 
     return (
         <>
             <Stack horizontal>
-                <div style={{ height: "100%", width: "60%", float: "left" }}>
-                    <TextField label="Title" value={title} onChange={onTitleChange} required />
-                    <TextField label="Description" value={description} onChange={onDescriptionChange} multiline required />
+                <div style={{ width: '60%', padding: '10px' }}>
+                    <TextField label="Title" value={item.title} onChange={(e) => setItem({ ...item, title: e.target.value })} disabled={!isNew} required />
+                    <TextField label="Description" value={item.description} onChange={(e) => setItem({ ...item, description: e.target.value })} multiline required />
                     <Dropdown
                         required
                         placeholder="Select an option"
                         label="Category"
-                        options={options}
-                        selectedKey={category}
-                        onChange={onCategoryChange}
+                        options={categoryOptions}
+                        selectedKey={item.category}
+                        onChange={(event, option) => setItem({ ...item, category: option.key })}
                         multiSelect={false}
                     />
+                    <Dropdown
+                        required
+                        placeholder="Select tags"
+                        label="Tags"
+                        options={tagOptions}
+                        selectedKeys={selectedKeys}
+                        onChange={onTagChange}
+                        multiSelect={true}
+                    />
+
                 </div>
-                <div style={{padding:" 0px 10px", justifyContent:"center"}}>
-                    <ImageUploaderButton/>
+                <div style={{ width: '40%', padding: '10px' }}>
+                    <Image
+                        src={item.image}
+                        alt="Clothing Item"
+                        width={300}
+                        height={200}
+                    />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                        id="fileInput"
+                    />
+                    <label htmlFor="fileInput">
+                        <IconButton
+                            iconProps={{ iconName: 'Upload' }}
+                            text="Upload"
+                            ariaLabel="Upload"
+                            onClick={() => document.getElementById('fileInput').click()}
+                        />
+                    </label>
                 </div>
-                
             </Stack>
 
             <div style={{ paddingTop: "8px", width: "60%", }}>
                 <Stack horizontal tokens={stackTokens}>
-                    <PrimaryButton text="Submit" />
-                    <DefaultButton text="Clear" />
+                    <PrimaryButton text="Submit" onClick={handleSubmit} disabled={submitDisabled()} />
+                    <DefaultButton text="Clear" onClick={clearFields}/>
                 </Stack>
             </div>            
         </>
-    );
-};
+    )
+}
 
-export default ItemFrom;
+export default ItemForm;

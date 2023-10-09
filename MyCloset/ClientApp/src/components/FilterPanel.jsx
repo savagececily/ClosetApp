@@ -10,7 +10,7 @@ const categoryOptions = [
     { key: 'shoes', text: 'Shoes' }
 ];
 
-const occasionOptions = [
+const tagOptions = [
     { key: 'casual', text: 'Casual' },
     { key: 'work', text: 'Work' },
     { key: 'party', text: 'Party' },
@@ -25,7 +25,7 @@ const FilterPanel = (props) => {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [category, setCategory] = useState('');
-    const [occasion, setOccasion] = useState('');
+    const [tags, setTags] = useState('');
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
@@ -35,14 +35,15 @@ const FilterPanel = (props) => {
         setCategory(option.key);
     };
 
-    const handleOccasionChange = (event, option) => {
-        setOccasion(option.key);
+    const handleTagChange = (event, option) => {
+        setTags(option.key);
+        // TODO: modify for multiselect
     };
 
     const resetFilter = () => {
         setSearchTerm('');
         setCategory('');
-        setOccasion('');
+        setTags('');
     };
 
     const applyFilter = () => {
@@ -85,12 +86,12 @@ const FilterPanel = (props) => {
                         onChange={handleCategoryChange}
                 />
                 <Dropdown
-                    placeholder="Select Occasion"
-                    label="Occasion"
-                    selectedKey={occasion}
+                    placeholder="Select Tags"
+                    label="Tags"
+                    selectedKey={tags}
                     multiSelect
-                    options={occasionOptions}
-                    onChange={handleOccasionChange}
+                    options={tagOptions}
+                    onChange={handleTagChange}
                 />
             </div>
         </Panel>

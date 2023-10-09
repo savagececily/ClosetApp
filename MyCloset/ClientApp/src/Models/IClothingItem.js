@@ -1,9 +1,9 @@
 ﻿export interface IClothingItem {
-    Id: string | undefined;
+    ClothingItemID: string | undefined;
     Title: string | undefined;
     Description: string | undefined;
     Category: string | undefined;
-    Occasion: string | undefined;
-    ImageLink: string | undefined;
+    Tags: string | undefined;
+    LinkToPhoto: string | undefined;
 }
 

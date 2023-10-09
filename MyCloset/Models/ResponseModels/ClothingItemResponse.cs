@@ -1,8 +1,9 @@
 ﻿using System;
-namespace MyCloset.RequestModels
+namespace MyCloset.Models.ResponseModels
 {
-    public class ClothingItemRequest
-    {
+	public class ClothingItemResponse
+	{
+
         public Guid? ClothingItemId { get; set; }
         public string Title { get; set; }
 
@@ -10,11 +11,11 @@ namespace MyCloset.RequestModels
 
         public string Category { get; set; }
 
-        public string Photo { get; set; }
+        public byte[] Image { get; set; }
 
         public Guid UserId { get; set; }
 
-        public List<string> Occasions { get; set; } = new();
+        public List<string> Tags { get; set; } = new();
     }
 }
 

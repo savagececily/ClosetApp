@@ -29,6 +29,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
     <PackageReference Include="Microsoft.AspNet.Identity.Owin" Version="2.2.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="6.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+    <PackageReference Include="Azure.Identity" Version="1.10.1" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.18.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.22" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,11 +51,22 @@
     <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
     <None Remove="ClientApp\src\Pages\" />
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
-    <None Remove="RequestModels\" />
     <None Remove="Newtonsoft.Json" />
     <None Remove="Microsoft.AspNetCore.Identity" />
     <None Remove="Microsoft.AspNet.Identity.EntityFramework" />
     <None Remove="Microsoft.AspNet.Identity.Owin" />
+    <None Remove="Services\" />
+    <None Remove="Services\Interfaces\" />
+    <None Remove="Services\Implementation\" />
+    <None Remove="ClientApp\src\API\" />
+    <None Remove="Microsoft.AspNetCore.Mvc" />
+    <None Remove="Models\DBModels\" />
+    <None Remove="Models\RequestModels\" />
+    <None Remove="Azure.Data.AppConfiguration" />
+    <None Remove="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
+    <None Remove="Utilities\" />
+    <None Remove="Swashbuckle.AspNetCore.Annotations" />
+    <None Remove="Models\ResponseModels\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,7 +75,14 @@
     <Folder Include="ClientApp\src\Models\" />
     <Folder Include="Models\" />
     <Folder Include="ClientApp\src\Pages\" />
-    <Folder Include="RequestModels\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\Interfaces\" />
+    <Folder Include="Services\Implementation\" />
+    <Folder Include="ClientApp\src\API\" />
+    <Folder Include="Models\DBModels\" />
+    <Folder Include="Models\RequestModels\" />
+    <Folder Include="Utilities\" />
+    <Folder Include="Models\ResponseModels\" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
