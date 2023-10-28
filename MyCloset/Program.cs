@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.OpenApi.Models;
-using MyCloset.Models;
+using MyCloset.Models.DBModels;
 using MyCloset.Services.Implementation;
 using MyCloset.Services.Interfaces;
 using Newtonsoft.Json;

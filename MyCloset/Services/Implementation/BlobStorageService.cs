@@ -35,9 +35,23 @@ namespace MyCloset.Services.Implementation
             return blobClient.Uri.ToString();
         }
 
+        public async Task<string> UploadImageAsync(Guid userId, IFormFile image)
+        {
+            string blobName = userId.ToString() + "-" + Guid.NewGuid().ToString();
+            BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+            BlobClient blobClient = containerClient.GetBlobClient(blobName);
+
+            using (var stream = image.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, true);
+            }
+
+            return blobClient.Uri.ToString();
+        }
+
         public async Task<byte[]> GetImageAsync(string blobUri)
         {
-            BlobClient blobClient = new BlobClient(new Uri(blobUri));
+            BlobClient blobClient = new BlobClient(new Uri(blobUri), new DefaultAzureCredential());
             BlobDownloadInfo blobDownloadInfo = await blobClient.DownloadAsync();
 
             using (var memoryStream = new MemoryStream())

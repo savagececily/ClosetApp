@@ -83,7 +83,7 @@ namespace MyCloset.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("SaveClothingItem")]
-        public async Task<IActionResult> SaveClothingItem([FromBody] ClothingItemRequest clothingItem)
+        public async Task<IActionResult> SaveClothingItem([FromForm] ClothingItemRequest clothingItem)
         {
             try
             {

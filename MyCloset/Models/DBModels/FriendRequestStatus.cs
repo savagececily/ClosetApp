@@ -1,13 +1,13 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-namespace MyCloset.Models.DBModels
+namespace MyCloset.Models.DBModels;
+
+public partial class FriendRequestStatus
 {
-    public class FriendRequestStatus
-    {
-        [Key]
-        public int StatusID { get; set; }
-        public string Status { get; set; }
-    }
-}
+    public int StatusId { get; set; }
 
+    public string Status { get; set; } = null!;
+
+    public virtual ICollection<Friendship> Friendships { get; set; } = new List<Friendship>();
+}

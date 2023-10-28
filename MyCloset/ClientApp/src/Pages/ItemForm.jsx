@@ -62,14 +62,9 @@ const ItemForm = () => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const base64Data = reader.result.split(',')[1]; // Extract Base64 data
-                setItem({ ...item, image: base64Data });
-            };
-            reader.readAsDataURL(file);
+            setItem({ ...item, image: URL.createObjectURL(file) });
         }
-    };
+    }; 
 
     const stackTokens: IStackTokens = { childrenGap: 5 };
 
@@ -85,13 +80,6 @@ const ItemForm = () => {
         setItem(categoryItem.key);
     };
 
-    //const onTagChange = (event: React.FormEvent<HTMLDivElement>, tagItem: IDropdownOption): void => {
-    //    if (tagItem) {
-    //        setSelectedKeys(
-    //            tagItem.selected ? [...selectedKeys, item.key] : selectedKeys.filter(key => key !== item.key),
-    //        );
-    //    }
-    //};
 
     const onTagChange = (event, tagItem) => {
         const updatedTags = [...selectedKeys]; // Create a copy of selected tags
@@ -130,8 +118,24 @@ const ItemForm = () => {
             return;
         }
 
+
         try {
-            const response = await saveClothingItem(item);
+            console.log("item", item);
+
+            const formData = new FormData(); // Create a new FormData object
+            formData.append('title', item.title);
+            formData.append('description', item.description);
+            formData.append('category', item.category);
+            formData.append('image', btoa(item.image));
+
+            // Append tags as an array (assuming item.tags is an array)
+            item.tags.forEach((tag, index) => {
+                formData.append(`tags[${index}]`, tag);
+            });
+
+            const response = await saveClothingItem(formData); // Pass the FormData to your API
+
+            //const response = await saveClothingItem(item);
 
             if (response.success) {
                 toast.success(response.message);
@@ -181,6 +185,7 @@ const ItemForm = () => {
                     />
                     <input
                         type="file"
+                        name="image"
                         accept="image/*"
                         onChange={handleFileChange}
                         style={{ display: 'none' }}

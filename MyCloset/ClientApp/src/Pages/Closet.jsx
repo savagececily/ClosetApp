@@ -1,11 +1,11 @@
 ﻿import { React, useState, useEffect} from 'react';
 import { CommandBar, ICommandBarItemProps, Stack } from '@fluentui/react';
-import { ClothingItemType } from '../Models/IClothingItem';
 import ClothingCard from '../components/ClothingCard';
 import { useBoolean } from '@fluentui/react-hooks';
 import { useNavigate } from 'react-router-dom';
 import FilterPanel from '../components/FilterPanel';
 import { getClosetItems } from '../API/ClosetApi';
+import NoItemsFound from '../components/NoItemsFound';
 
 const Closet = (props) => {
     const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false);
@@ -17,19 +17,20 @@ const Closet = (props) => {
     const navigate = useNavigate();
 
     useEffect(() => {
+
         // Define an async function to fetch the data
         const fetchData = async () => {
             try {
                 const response = await getClosetItems(props.user.Id); // Call the Axios function
 
-                if (response && response.isSuccess) {
+                if (response && response.success === true) {
                     const clothingItems = response.data.map(item => ({
-                        Id: item.clothingItemID,
-                        Title: item.title,
-                        Description: item.description,
-                        Category: item.category,
-                        Tags: item.tags,
-                        Image: item.Image,
+                        Id: item.ClothingItemId,
+                        Title: item.Title,
+                        Description: item.Description,
+                        Category: item.Category,
+                        Tags: item.Tags,
+                        Image: `data:image/png;base64,${ item.Image }`,
                     }));
 
                     // Update the state with the fetched data
@@ -41,6 +42,7 @@ const Closet = (props) => {
         };
 
         fetchData(); // Call the async function
+
     }, [props.user.Id]);
 
     const handleCardSelect = (cardId, isSelected) => {
@@ -76,7 +78,6 @@ const Closet = (props) => {
         console.log('selected cards', selectedClothingItem)
 
         if (selectedClothingItem) {
-            console.log('in if');
             navigate(`/AddItem/false`, { state: { clothingItem: selectedClothingItem } });
         }
     };
@@ -93,6 +94,7 @@ const Closet = (props) => {
             text: selectAllText,
             iconProps: { iconName: selectAllText === 'Select All' ? 'CheckMark' : 'Cancel' },
             onClick: toggleSelectAll, // Call your select all function here
+            disabled: closetItems
         },
         {
             key: 'newItem',
@@ -137,18 +139,21 @@ const Closet = (props) => {
             />
 
             <FilterPanel isOpen={isOpen} dismissPanel={ dismissPanel}/>
+            {closetItems && closetItems.length === 0 ?
+                <NoItemsFound /> :
+                <Stack horizontalAlign="start" verticalAlign="start" horizontal gap={20}>
+                    <Stack horizontal gap={20}>
+                        {closetItems.map((item) => (
+                            <ClothingCard
+                                clothingItem={item}
+                                onSelect={handleCardSelect}
+                                isSelected={selectedCards.includes(item.Id)}
+                            />
+                        ))}
+                    </Stack>
+                </Stack>
+            }
 
-            <Stack horizontalAlign="start" verticalAlign="start" horizontal gap={20}>
-                  <Stack horizontal gap={20}>
-                    {closetItems.map((item) => (
-                        <ClothingCard
-                            clothingItem={item}
-                            onSelect={handleCardSelect}
-                            isSelected={selectedCards.includes(item.Id)}
-                        />
-                    ))}
-                  </Stack>
-            </Stack>
         </>
     );
 }

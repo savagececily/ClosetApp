@@ -13,18 +13,20 @@ export async function getClosetItems(userId) {
                 `${config.API_BASE_URL}/GetMyCloset`
             );
         }
+        console.log("full response", fullResponse);
 
         const response = {
             success: isSuccess(fullResponse),
-            message: fullResponse.data.message,
-            data: fullResponse.data.data,
+            message: fullResponse.data.Message,
+            data: fullResponse.data.Data,
         };
+        console.log("response", response);
 
         return response;
     } catch (error) {
         // Handle network errors or Axios-specific errors
         const errorMessage = error.response
-            ? error.response.data.message
+            ? error.response.data.Message
             : 'Network error occurred';
 
         const response = {
@@ -38,8 +40,6 @@ export async function getClosetItems(userId) {
 }
 
 export async function saveClothingItem(clothingItem) {
-    console.log(clothingItem);
-
     try {
         const fullResponse = await axios.post(
             `${config.API_BASE_URL}/SaveClothingItem`, clothingItem);
@@ -69,61 +69,121 @@ export async function saveClothingItem(clothingItem) {
 
 export async function deleteClothingItems(clothingItemIds) {
     try {
-        const response = await axios.delete(`${config.API_BASE_URL}/Closet/DeleteClothingItems`, {
+        const fullResponse = await axios.delete(`${config.API_BASE_URL}/DeleteClothingItems`, {
             data: clothingItemIds,
         });
 
-        // TODO: transform response
+        const response = {
+            success: isSuccess(fullResponse),
+            message: fullResponse.data.message,
+            data: fullResponse.data.data,
+        };
 
         return response;
     } catch (error) {
-        throw error;
+        // Handle network errors or Axios-specific errors
+        const errorMessage = error.response
+            ? error.response.data.message
+            : 'Network error occurred';
+
+        const response = {
+            success: false,
+            message: errorMessage,
+            data: null,
+        };
+
+        return response;
     }
 }
 
 
 export async function getOutfits(userId) {
     try {
-        var response;
+        var fullResponse;
 
         if (userId) {
-            response = await axios.get(`${config.API_BASE_URL}/Closet/Outfits/${userId}`);
+            fullResponse = await axios.get(`${config.API_BASE_URL}/Outfits?userId=${userId}`);
         }
         else {
-            response = await axios.get(`${config.API_BASE_URL}/Closet/Outfits`);
+            fullResponse = await axios.get(`${config.API_BASE_URL}/Outfits`);
         }
 
-        // TODO: transform response 
+        const response = {
+            success: isSuccess(fullResponse),
+            message: fullResponse.data.message,
+            data: fullResponse.data.data,
+        };
 
         return response;
     } catch (error) {
-        throw error;
+        // Handle network errors or Axios-specific errors
+        const errorMessage = error.response
+            ? error.response.data.message
+            : 'Network error occurred';
+
+        const response = {
+            success: false,
+            message: errorMessage,
+            data: null,
+        };
+
+        return response;
     }
 }
 
 export async function saveOutfit(outfit) {
     try {
-        const response = await axios.post(`${config.API_BASE_URL}/Closet/SaveOutfit`, outfit);
+        const fullResponse = await axios.post(`${config.API_BASE_URL}/SaveOutfit`, outfit);
 
-        // TODO: transform response 
+        const response = {
+            success: isSuccess(fullResponse),
+            message: fullResponse.data.message,
+            data: fullResponse.data.data,
+        };
 
         return response;
     } catch (error) {
-        throw error;
+        // Handle network errors or Axios-specific errors
+        const errorMessage = error.response
+            ? error.response.data.message
+            : 'Network error occurred';
+
+        const response = {
+            success: false,
+            message: errorMessage,
+            data: null,
+        };
+
+        return response;
     }
 }
 
 export async function deleteOutfits(outfits) {
     try {
-        const response = await axios.delete(`${config.API_BASE_URL}/Closet/DeleteOutfits`, {
+        const fullResponse = await axios.delete(`${config.API_BASE_URL}/Closet/DeleteOutfits`, {
             data: outfits,
         });
 
-        // TODO: transform response
+        const response = {
+            success: isSuccess(fullResponse),
+            message: fullResponse.data.message,
+            data: fullResponse.data.data,
+        };
 
         return response;
     } catch (error) {
-        throw error;
+        // Handle network errors or Axios-specific errors
+        const errorMessage = error.response
+            ? error.response.data.message
+            : 'Network error occurred';
+
+        const response = {
+            success: false,
+            message: errorMessage,
+            data: null,
+        };
+
+        return response;
     }
 }
 

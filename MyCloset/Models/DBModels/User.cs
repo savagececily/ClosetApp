@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace MyCloset.Models.DBModels;
 
-public class User
+public partial class User
 {
-    [Key]
-    public Guid UserID { get; set; }
+    public Guid UserId { get; set; }
 
-    [Required]
-    [MaxLength(255)]
-    public string Email { get; set; }
+    public string DisplayName { get; set; } = null!;
 
-    [Required]
-    [MaxLength(255)]
-    public string DisplayName { get; set; }
+    public string Email { get; set; } = null!;
 
-    [Required]
-    [MaxLength(255)]
-    public string AccountProvider { get; set; }
+    public string AccountProvider { get; set; } = null!;
 
-    [Required]
     public DateTime DateAdded { get; set; }
 
-    [Required]
     public DateTime LastModified { get; set; }
 
-    [Required]
     public DateTime LastLogin { get; set; }
 
-    public List<Friendship> SentFriendRequests { get; set; }
-    public List<Friendship> ReceivedFriendRequests { get; set; }
+    public virtual ICollection<ClothingItem> ClothingItems { get; set; } = new List<ClothingItem>();
+
+    public virtual ICollection<Friendship> FriendshipRequestedNavigations { get; set; } = new List<Friendship>();
+
+    public virtual ICollection<Friendship> FriendshipRequestorNavigations { get; set; } = new List<Friendship>();
+
+    public virtual ICollection<Outfit> Outfits { get; set; } = new List<Outfit>();
 }

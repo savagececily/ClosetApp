@@ -11,7 +11,7 @@ namespace MyCloset.Models.ResponseModels
 
         public string Category { get; set; }
 
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
 
         public Guid UserId { get; set; }
 

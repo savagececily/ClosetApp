@@ -10,7 +10,7 @@ namespace MyCloset.Models.RequestModels
 
         public string Category { get; set; }
 
-        public string Image { get; set; } // For storing image as base64 string
+        public string Image { get; set; }
 
         public Guid? UserId { get; set; }
 

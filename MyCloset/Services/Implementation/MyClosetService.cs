@@ -29,7 +29,7 @@ namespace MyCloset.Services.Implementation
             if (clothingItem.Id.HasValue)
             {
                 ClothingItem? existingClothingItem = await _dbContext.ClothingItems
-.                   FirstOrDefaultAsync(x => x.ClothingItemID == clothingItem.Id);
+.                   FirstOrDefaultAsync(x => x.ClothingItemId == clothingItem.Id);
                 return await UpdateClothingItem(clothingItem, existingClothingItem);
             }
             else
@@ -43,7 +43,7 @@ namespace MyCloset.Services.Implementation
         {
             try
             {
-                if (await _dbContext.ClothingItems.AnyAsync(x => x.Title == newClothingItem.Title && x.UserID == newClothingItem.UserId))
+                if (await _dbContext.ClothingItems.AnyAsync(x => x.Title == newClothingItem.Title && x.UserId == newClothingItem.UserId))
                 {
                     _logger.LogError($"User: {newClothingItem.UserId} tried to add clothing item: {newClothingItem.Title} but this title already exists.");
 
@@ -58,7 +58,7 @@ namespace MyCloset.Services.Implementation
                 {
                     Title = newClothingItem.Title,
                     Description = newClothingItem.Description,
-                    UserID = newClothingItem.UserId.HasValue ? newClothingItem.UserId.Value : throw new Exception("User Id was not provided during add new clothing item."),
+                    UserId = newClothingItem.UserId.HasValue ? newClothingItem.UserId.Value : throw new Exception("User Id was not provided during add new clothing item."),
                     Category = newClothingItem.Category,
                     Tags = JsonConvert.SerializeObject(newClothingItem.Tags), // TODO: Get Generated Tags append to submitted Tags
                     LinkToPhoto = await _blobStorageService.UploadImageAsync(newClothingItem.UserId.Value, newClothingItem.Image)
@@ -93,55 +93,59 @@ namespace MyCloset.Services.Implementation
         {
             try
             {
-                    if (existingClothingItem == null)
+                if (existingClothingItem == null)
+                {
+                    _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but it was not found.");
+
+                    return new ClosetActionResult
                     {
-                        _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but it was not found.");
+                        StatusCode = HttpStatusCode.NotFound,
+                        Message = $"{updatedClothingItem.Title} was not found."
+                    };
+                }
 
-                        return new ClosetActionResult
-                        {
-                            StatusCode = HttpStatusCode.NotFound,
-                            Message = $"{updatedClothingItem.Title} was not found."
-                        };
-                    }
+                if (existingClothingItem.UserId != updatedClothingItem.UserId)
+                {
+                    _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but this item belongs to user: {existingClothingItem.UserId}.");
 
-                    if (existingClothingItem.UserID != updatedClothingItem.UserId)
+                    return new ClosetActionResult
                     {
-                        _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but this item belongs to user: {existingClothingItem.UserID}.");
+                        StatusCode = HttpStatusCode.Forbidden,
+                        Message = $"\'{existingClothingItem.Title}\' is not part of your closet."
+                    };
+                }
 
-                        return new ClosetActionResult
-                        {
-                            StatusCode = HttpStatusCode.Forbidden,
-                            Message = $"\'{existingClothingItem.Title}\' is not part of your closet."
-                        };
-                    }
+                if (updatedClothingItem.Title != existingClothingItem.Title)
+                {
+                    _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but title cannot be changed.");
 
-                    if (updatedClothingItem.Title != existingClothingItem.Title)
+                    return new ClosetActionResult
                     {
-                        _logger.LogError($"User: {updatedClothingItem.UserId} tried to update clothing item: {updatedClothingItem.Id} but title cannot be changed.");
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Message = $"The title for \'{existingClothingItem.Title}\' cannot be changed."
+                    };
+                }
 
-                        return new ClosetActionResult
-                        {
-                            StatusCode = HttpStatusCode.BadRequest,
-                            Message = $"The title for \'{existingClothingItem.Title}\' cannot be changed."
-                        };
-                    }
+                existingClothingItem.Description = updatedClothingItem.Description;
+                existingClothingItem.Category = updatedClothingItem.Category;
 
-                    existingClothingItem.Description = updatedClothingItem.Description;
-                    existingClothingItem.Category = updatedClothingItem.Category;
+                List<string> existingTags = new();
+                try
+                {
+                    existingTags = JsonConvert.DeserializeObject<List<string>>(existingClothingItem.Tags);
+                    existingTags.AddRange(updatedClothingItem.Tags);
 
-                    List<string> existingTags = new();
-                    try
-                    {
-                        existingTags = JsonConvert.DeserializeObject<List<string>>(existingClothingItem.Tags);
-                        // TODO: compare existing list with new Tags, if any were selected by the user, remove duplicates
+                    HashSet<string> uniqueTags = existingTags.ToHashSet<string>();
+                    // TODO: Get Tag list from AI
 
-                        // TODO: Get Tag list from AI
 
-                    }
-                    catch (Exception ex)
-                    {
-                        // TODO: Add Logging
-                    }
+                    existingClothingItem.Tags = JsonConvert.SerializeObject(uniqueTags);
+                }
+                catch (Exception ex)
+                {
+                        
+                    _logger.LogError(ex, $"");
+                }
 
                 await _dbContext.SaveChangesAsync();
 
@@ -155,11 +159,11 @@ namespace MyCloset.Services.Implementation
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, $"Exception was thrown while updating clothing item {existingClothingItem.ClothingItemID}. {ex.Message} ");
+                _logger.LogError(ex, $"Exception was thrown while updating clothing item {existingClothingItem.ClothingItemId}. {ex.Message} ");
                 return new ClosetActionResult
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Oops! Something went wrong while updating {existingClothingItem.ClothingItemID}."
+                    Message = $"Oops! Something went wrong while updating {existingClothingItem.ClothingItemId}."
                 };
             }
         }
@@ -176,12 +180,11 @@ namespace MyCloset.Services.Implementation
             try
             {
                 IQueryable<ClothingItem> clothingItemsToDelete = _dbContext.ClothingItems
-                    .Include(x => x.OutfitClothingItems)
-                    .ThenInclude(x => x.Outfit)
-                    .Where(x => clothingItemIds.Contains(x.ClothingItemID));
+                    .Include(x => x.Outfits)
+                    .Where(x => clothingItemIds.Contains(x.ClothingItemId));
 
 
-                if(clothingItemsToDelete.Any(x => x.UserID != currentUser))
+                if(clothingItemsToDelete.Any(x => x.UserId != currentUser))
                 {
                     // TODO: Log error 
                     _logger.LogError($"");
@@ -221,7 +224,7 @@ namespace MyCloset.Services.Implementation
             try
             {
                 IQueryable<Outfit> outfitsToDelete = _dbContext.Outfits
-                .Where(x => outfitIds.Contains(x.OutfitID));
+                .Where(x => outfitIds.Contains(x.OutfitId));
 
                 _dbContext.Outfits.RemoveRange(outfitsToDelete);
 
@@ -239,7 +242,7 @@ namespace MyCloset.Services.Implementation
         {
             try
             {
-                ClothingItem? clothingItem = await _dbContext.ClothingItems.FirstOrDefaultAsync(x => x.ClothingItemID == clothingItemId);
+                ClothingItem? clothingItem = await _dbContext.ClothingItems.FirstOrDefaultAsync(x => x.ClothingItemId == clothingItemId);
 
                 throw new NotImplementedException(); 
             }
@@ -255,21 +258,22 @@ namespace MyCloset.Services.Implementation
         {
             try
             {
-                List<ClothingItem> clothingItems = await _dbContext.ClothingItems.Where(x => x.UserID == userId).ToListAsync();
+                List<ClothingItem> clothingItems = await _dbContext.ClothingItems.Where(x => x.UserId == userId).ToListAsync();
 
-                var tasks = clothingItems.Select(async x =>
+
+                List<Task<ClothingItemResponse>> tasks = clothingItems.Select(async x =>
                 {
+
                     var response = new ClothingItemResponse
                     {
-                        ClothingItemId = x.ClothingItemID,
+                        ClothingItemId = x.ClothingItemId,
                         Title = x.Title,
                         Description = x.Description,
                         Category = x.Category,
-                        Tags = x.Tags == null ? new List<string>() : (List<string>)JsonConvert.DeserializeObject(x.Tags),
-                        UserId = x.UserID,
+                        Tags = x.Tags == null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(x.Tags),
+                        UserId = x.UserId,
+                        Image = Convert.ToBase64String(await _blobStorageService.GetImageAsync(x.LinkToPhoto))
                     };
-
-                    response.Image = await _blobStorageService.GetImageAsync(x.LinkToPhoto);
 
                     return response;
                 }).ToList();
@@ -304,7 +308,7 @@ namespace MyCloset.Services.Implementation
             try
             {
 
-                Outfit? outfit = await _dbContext.Outfits.FirstOrDefaultAsync(x => x.OutfitID == outfitId);
+                Outfit? outfit = await _dbContext.Outfits.FirstOrDefaultAsync(x => x.OutfitId == outfitId);
                 throw new NotImplementedException();
             }
             catch (Exception ex)
@@ -320,7 +324,7 @@ namespace MyCloset.Services.Implementation
             {
                 _logger.LogInformation($"Getting outfits for user: {userId}");
 
-                List<Outfit> Outfits = await _dbContext.Outfits.Where(x => x.UserID == userId).ToListAsync();
+                List<Outfit> Outfits = await _dbContext.Outfits.Where(x => x.UserId == userId).ToListAsync();
                 //TODO: evaluate creating an additional return type to include all data for each item
 
                 throw new NotImplementedException();

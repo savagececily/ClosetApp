@@ -1,28 +1,21 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using MyCloset.Models.DBModels;
+using System.Collections.Generic;
 
-public class Friendship
+namespace MyCloset.Models.DBModels;
+
+public partial class Friendship
 {
-    [Key]
-    public Guid FriendshipID { get; set; }
+    public Guid FriendshipId { get; set; }
 
-    [Required]
     public Guid Requestor { get; set; }
 
-    [Required]
     public Guid Requested { get; set; }
 
-    [Required]
     public int RequestStatus { get; set; }
 
-    [ForeignKey("Requestor")]
-    public User RequestorUser { get; set; }
+    public virtual FriendRequestStatus RequestStatusNavigation { get; set; } = null!;
 
-    [ForeignKey("Requested")]
-    public User RequestedUser { get; set; }
+    public virtual User RequestedNavigation { get; set; } = null!;
 
-    [ForeignKey("RequestStatus")]
-    public FriendRequestStatus Status { get; set; }
+    public virtual User RequestorNavigation { get; set; } = null!;
 }

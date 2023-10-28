@@ -7,7 +7,8 @@ namespace MyCloset.Services.Interfaces
     {
         public Task<ClosetActionResult> CreateUser(string email, string provider, string displayName);
         public Task<ClosetActionResult> GetUserDetails(Guid userId);
-        public Task<ClosetActionResult> DeleteUser(Guid userId);
+        public Task<ClosetActionResult> EditUserDetails(string displayName);
+        public Task<ClosetActionResult> DeleteUser(Guid userId, bool isPermanent = false);
     }
 }
 

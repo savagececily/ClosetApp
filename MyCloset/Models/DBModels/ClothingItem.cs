@@ -1,41 +1,29 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using MyCloset.Models.DBModels;
+using System.Collections.Generic;
 
-public class ClothingItem
+namespace MyCloset.Models.DBModels;
+
+public partial class ClothingItem
 {
-    [Key]
-    public Guid ClothingItemID { get; set; }
+    public Guid ClothingItemId { get; set; }
 
-    [Required]
-    [MaxLength(255)]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
-    [Required]
-    [MaxLength(255)]
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
 
-    [Required]
-    [MaxLength(255)]
-    public string Category { get; set; }
+    public string Category { get; set; } = null!;
 
-    [Required]
-    [MaxLength(255)]
-    public string LinkToPhoto { get; set; }
+    public string LinkToPhoto { get; set; } = null!;
 
-    [Required]
-    public Guid UserID { get; set; }
+    public Guid UserId { get; set; }
 
-    [Required]
-    public string Tags { get; set; }
+    public string Tags { get; set; } = null!;
 
     public DateTime DateAdded { get; set; }
 
     public DateTime LastModified { get; set; }
 
-    [ForeignKey("UserID")]
-    public User User { get; set; }
+    public virtual User User { get; set; } = null!;
 
-    public List<OutfitClothingItem> OutfitClothingItems { get; set; }
+    public virtual ICollection<Outfit> Outfits { get; set; } = new List<Outfit>();
 }

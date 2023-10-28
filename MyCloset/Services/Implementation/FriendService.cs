@@ -38,7 +38,7 @@ namespace MyCloset.Services.Implementation
             try
             {
                 Friendship? friendship = await _dbContext.Friendships
-                    .FirstOrDefaultAsync(x => x.FriendshipID == friendshipId);
+                    .FirstOrDefaultAsync(x => x.FriendshipId == friendshipId);
                 // TODO: redo method, the following code is not how this should be working
 
                 if (friendship != null)
@@ -65,8 +65,8 @@ namespace MyCloset.Services.Implementation
 
         public async Task<ClosetActionResult> DeleteFriend(Guid currentUser, Guid deletedFriend)
         {
-            User? currentUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserID == currentUser);
-            User? deletedFriendUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserID == deletedFriend);
+            User? currentUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == currentUser);
+            User? deletedFriendUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == deletedFriend);
 
             try
             {

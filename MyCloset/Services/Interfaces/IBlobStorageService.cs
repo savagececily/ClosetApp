@@ -14,6 +14,8 @@ namespace MyCloset.Services.Interfaces
         /// <returns></returns>
         public Task<string> UploadImageAsync(Guid userId, string image);
 
+        public Task<string> UploadImageAsync(Guid userId, IFormFile image);
+
         /// <summary>
         /// Get image from Azure Blob Storage
         /// </summary>
