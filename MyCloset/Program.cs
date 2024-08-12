@@ -10,6 +10,7 @@ using MyCloset.Services.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration.AddAzureAppConfiguration(options =>
@@ -36,28 +37,6 @@ builder.Services.AddTransient<IMyClosetService, MyClosetService>();
 builder.Services.AddTransient<IFriendService, FriendService>();
 builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-//})
-//        .AddCookie()
-//        .AddGoogle(options =>
-//        {
-//            options.ClientId = Configuration["Authentication:Google:ClientId"];
-//            options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-//        })
-//        .AddFacebook(options =>
-//        {
-//            options.AppId = Configuration["Authentication:Facebook:AppId"];
-//            options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-//        })
-//        .AddMicrosoftAccount(options =>
-//        {
-//            options.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-//            options.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-//        });
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -74,6 +53,27 @@ builder.Services.AddControllers()
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
         options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
     });
+
+builder.Services.AddAuthentication()
+   .AddGoogle(options =>
+   {
+       IConfigurationSection googleAuthNSection =
+       configuration.GetSection("Authentication:Google");
+       options.ClientId = googleAuthNSection["ClientId"];
+       options.ClientSecret = googleAuthNSection["ClientSecret"];
+   })
+   .AddFacebook(options =>
+   {
+       IConfigurationSection FBAuthNSection =
+       configuration.GetSection("Authentication:FB");
+       options.ClientId = FBAuthNSection["ClientId"];
+       options.ClientSecret = FBAuthNSection["ClientSecret"];
+   })
+   .AddMicrosoftAccount(microsoftOptions =>
+   {
+       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+   });
 
 builder.Services.AddSwaggerGen(c =>
 {
