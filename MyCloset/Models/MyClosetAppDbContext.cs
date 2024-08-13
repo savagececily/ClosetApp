@@ -91,12 +91,12 @@ public partial class MyClosetAppDbContext : DbContext
                 .HasConstraintName("FK_Friendship_RequestStatus");
 
             entity.HasOne(d => d.RequestedNavigation).WithMany(p => p.FriendshipRequestedNavigations)
-                .HasForeignKey(d => d.Requested)
+                .HasForeignKey(d => d.User1)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Friendship_Requested");
 
             entity.HasOne(d => d.RequestorNavigation).WithMany(p => p.FriendshipRequestorNavigations)
-                .HasForeignKey(d => d.Requestor)
+                .HasForeignKey(d => d.User2)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Friendship_Requestor");
         });
