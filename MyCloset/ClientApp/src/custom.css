@@ -26,3 +26,11 @@ code {
 .main-contianer {
     height: 100%;
 }
+
+.clothing-card {
+    border-style: solid;
+    border-width: 1px;
+    border-color: darkgray;
+    max-width: 30%;
+}
+
