@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using MyCloset.Models;
+using MyCloset.Models.DBModels;
+using MyCloset.Models.RequestModels;
 using MyCloset.Services.Interfaces;
+using MyCloset.Utilities;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,58 +14,111 @@ namespace MyCloset.Controllers
         private readonly ILogger<FriendsController> _logger;
         private readonly IFriendService _friendService;
 
-        // TODO: Add friend service via DI
         public FriendsController(ILogger<FriendsController> logger, IFriendService friendService)
         {
             _logger = logger;
             _friendService = friendService;
         }
 
-        // TODO: Implement Get Friends Controller
         /// <summary>
         /// Get friends list for the current user
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        [HttpGet]
-        [Route("GetFriends")]
-        public async Task<IActionResult> GetFriends()
+        [HttpGet("GetFriends")]
+        public async Task<IActionResult> GetFriends(Guid userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ClosetActionResult result = await _friendService.GetFriends(userId);
+                return ResultHelper(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An exception occurred while getting friend list for user {userId}. {ex.Message}");
+
+                return ResultHelper(new ClosetActionResult
+                {
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    Message = $"Oops! Something went wrong while fetching your friend list."
+                });
+            }
+
         }
 
-        // TODO: Implement Request Freind Controller
         /// <summary>
-        /// Request friend for the current user
+        /// Create, Accept/Decline, Block/Remove friendship
         /// </summary>
+        /// <param name="friendshipRequest"></param>
         /// <returns></returns>
-        public async Task<IActionResult> RequestFriend(Guid requestedFriend)
+        [HttpPost("EditFriendship")]
+        public async Task<IActionResult> EditFriendship([FromBody] FriendshipRequest friendshipRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ClosetActionResult result = await _friendService.EditFriendship(friendshipRequest);
+                return ResultHelper(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An exception occurred while get updating friendship for user {friendshipRequest.User1}. {ex.Message}");
+
+                return ResultHelper(new ClosetActionResult
+                {
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    Message = $"Oops! Something went wrong while {friendshipRequest.RequestType.ToActionString()}."
+                });
+            }
         }
 
-        // TODO: Implement Friend Request Response Controller
         /// <summary>
-        /// Process response to friend request
+        /// Get blocked list
         /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpPut]
-        [Route("FriendRequestResponse")]
-        public async Task<IActionResult> FriendRequestResponse()
+        [HttpGet("BlockedList")]
+        public async Task<IActionResult> GetBlockedList(Guid userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ClosetActionResult result = await _friendService.GetBlockedList(userId);
+                return ResultHelper(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An exception occurred while getting blocked list for user {userId}. {ex.Message}");
+
+                return ResultHelper(new ClosetActionResult
+                {
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    Message = $"Oops! Something went wrong while fetching your blocked list."
+                });
+            }
         }
 
-        // TODO: Implement Remove Friend Controller
         /// <summary>
-        /// Remove friend from the current users list
+        /// Get pending friendship requests
         /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("RemoveFriend")]
-        public async Task<IActionResult> RemoveFriend(Guid deletedFriend)
+        [HttpGet("PendingRequests")]
+        public async Task<IActionResult> GetFriendRequests(Guid userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ClosetActionResult result = await _friendService.GetFriendRequests(userId);
+                return ResultHelper(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An exception occurred while getting friend list for user {userId}. {ex.Message}");
+
+                return ResultHelper(new ClosetActionResult
+                {
+                    StatusCode = System.Net.HttpStatusCode.InternalServerError,
+                    Message = $"Oops! Something went wrong while fetching your pending friend requests."
+                });
+            }
         }
     }
 }

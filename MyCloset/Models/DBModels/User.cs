@@ -13,6 +13,8 @@ public partial class User
 
     public string AccountProvider { get; set; } = null!;
 
+    public bool IsPublic { get; set; } = true;
+
     public DateTime DateAdded { get; set; }
 
     public DateTime LastModified { get; set; }

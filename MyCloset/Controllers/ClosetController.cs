@@ -24,7 +24,7 @@ namespace MyCloset.Controllers
 
 #region Closet
         /// <summary>
-        ///  
+        ///  Get closet items for the current user
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -51,11 +51,10 @@ namespace MyCloset.Controllers
         }
 
         /// <summary>
-        ///  
+        ///  Get closet items for a specific user
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
-        [Route("GetCloset")]
+        [HttpGet("GetCloset")]
         public async Task<IActionResult> GetCloset(Guid userId)
         {
             try
@@ -77,12 +76,11 @@ namespace MyCloset.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Save clothing item details
         /// </summary>
         /// <param name="clothingItem"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("SaveClothingItem")]
+        [HttpPost("SaveClothingItem")]
         public async Task<IActionResult> SaveClothingItem([FromForm] ClothingItemRequest clothingItem)
         {
             try
@@ -106,12 +104,11 @@ namespace MyCloset.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Delete clothing items from closet
         /// </summary>
         /// <param name="clothingItemIds"></param>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("DeleteClothingItems")]
+        [HttpDelete("DeleteClothingItems")]
         public async Task<IActionResult> DeleteClothingItemsAsync(List<Guid> clothingItemIds)
         {
             try
@@ -121,8 +118,7 @@ namespace MyCloset.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: List items by id in error log
-                _logger.LogError(ex, $"An exception occurred while deleting the following clothing items: . {ex.Message}");
+                _logger.LogError(ex, $"An exception occurred while deleting the following clothing items: {string.Join(',', clothingItemIds)}. {ex.Message}");
 
                 return ResultHelper(new ClosetActionResult
                 {
