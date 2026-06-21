@@ -56,11 +56,13 @@ namespace MyCloset.Services.Implementation
 
                 ClothingItem clothingItemToAdd = new ClothingItem
                 {
+                    id = Guid.NewGuid().ToString(),
+                    ClothingItemId = Guid.NewGuid(),
                     Title = newClothingItem.Title,
                     Description = newClothingItem.Description,
                     UserId = newClothingItem.UserId.HasValue ? newClothingItem.UserId.Value : throw new Exception("User Id was not provided during add new clothing item."),
                     Category = newClothingItem.Category,
-                    Tags = JsonConvert.SerializeObject(newClothingItem.Tags), // TODO: Get Generated Tags append to submitted Tags
+                    Tags = newClothingItem.Tags ?? new List<string>(),
                     LinkToPhoto = await _blobStorageService.UploadImageAsync(newClothingItem.UserId.Value, newClothingItem.Image)
                 };
 
@@ -129,22 +131,12 @@ namespace MyCloset.Services.Implementation
                 existingClothingItem.Description = updatedClothingItem.Description;
                 existingClothingItem.Category = updatedClothingItem.Category;
 
-                List<string> existingTags = new();
-                try
+                // Merge tags
+                var existingTags = existingClothingItem.Tags ?? new List<string>();
+                if (updatedClothingItem.Tags != null && updatedClothingItem.Tags.Any())
                 {
-                    existingTags = JsonConvert.DeserializeObject<List<string>>(existingClothingItem.Tags);
                     existingTags.AddRange(updatedClothingItem.Tags);
-
-                    HashSet<string> uniqueTags = existingTags.ToHashSet<string>();
-                    // TODO: Get Tag list from AI
-
-
-                    existingClothingItem.Tags = JsonConvert.SerializeObject(uniqueTags);
-                }
-                catch (Exception ex)
-                {
-                        
-                    _logger.LogError(ex, $"");
+                    existingClothingItem.Tags = existingTags.Distinct().ToList();
                 }
 
                 await _dbContext.SaveChangesAsync();
@@ -180,7 +172,6 @@ namespace MyCloset.Services.Implementation
             try
             {
                 IQueryable<ClothingItem> clothingItemsToDelete = _dbContext.ClothingItems
-                    .Include(x => x.Outfits)
                     .Where(x => clothingItemIds.Contains(x.ClothingItemId));
 
 
@@ -270,7 +261,7 @@ namespace MyCloset.Services.Implementation
                         Title = x.Title,
                         Description = x.Description,
                         Category = x.Category,
-                        Tags = x.Tags == null ? new List<string>() : JsonConvert.DeserializeObject<List<string>>(x.Tags),
+                        Tags = x.Tags ?? new List<string>(),
                         UserId = x.UserId,
                         Image = Convert.ToBase64String(await _blobStorageService.GetImageAsync(x.LinkToPhoto))
                     };

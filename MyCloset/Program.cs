@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Azure.Identity;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.OpenApi.Models;
@@ -18,7 +17,11 @@ IConfiguration configuration = builder.Configuration.AddAzureAppConfiguration(op
     // Check if additional label is available
     string label = Environment.GetEnvironmentVariable("MyClosetAppEnvironment") ?? "Development";
 
-    options.Connect(new Uri("https://myclosetapp-appconfig.azconfig.io"), new DefaultAzureCredential())
+    // Use environment variable for App Configuration endpoint (set by Azure App Service)
+    var appConfigEndpoint = Environment.GetEnvironmentVariable("AZURE_APP_CONFIG_ENDPOINT") 
+        ?? "https://myclosetapp-appconfig.azconfig.io"; // Fallback for local development
+
+    options.Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
     .Select(KeyFilter.Any, LabelFilter.Null)
     .Select(KeyFilter.Any, label);
 })
@@ -27,15 +30,41 @@ IConfiguration configuration = builder.Configuration.AddAzureAppConfiguration(op
 // Add services to the container.
 builder.Services.AddDbContext<MyClosetAppDbContext>(options =>
 {
-    var connectionString = configuration["MyClosetAppDB"];
+    var cosmosEndpoint = configuration["CosmosDb:Endpoint"];
+    var cosmosConnectionString = configuration["CosmosDb:ConnectionString"];
+    var databaseName = configuration["CosmosDb:DatabaseName"] ?? "MyClosetDB";
 
-    options.UseSqlServer(connectionString);
+    // Use managed identity with endpoint if available (production), otherwise use connection string (local dev)
+    if (!string.IsNullOrEmpty(cosmosEndpoint))
+    {
+        options.UseCosmos(
+            accountEndpoint: cosmosEndpoint,
+            tokenCredential: new DefaultAzureCredential(),
+            databaseName: databaseName
+        );
+    }
+    else if (!string.IsNullOrEmpty(cosmosConnectionString))
+    {
+        options.UseCosmos(
+            connectionString: cosmosConnectionString,
+            databaseName: databaseName
+        );
+    }
+    else
+    {
+        throw new InvalidOperationException("CosmosDB configuration is missing. Provide either CosmosDb:Endpoint or CosmosDb:ConnectionString.");
+    }
 });
 
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IMyClosetService, MyClosetService>();
 builder.Services.AddTransient<IFriendService, FriendService>();
+builder.Services.AddTransient<IAIService, AIService>();
+builder.Services.AddTransient<ISocialMediaService, SocialMediaService>();
 builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+
+// Add HttpClient for services
+builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options =>
 {
@@ -120,16 +149,4 @@ app.MapControllerRoute(
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Closet App V1");
     });
 
-app.MapFallbackToFile("index.html");;
-
 app.Run();
-
-app.UseSpa(spa =>
-{
-    spa.Options.SourcePath = "ClientApp";
-
-    if (app.Environment.IsDevelopment())
-    {
-        spa.UseReactDevelopmentServer(npmScript: "start");
-    }
-});

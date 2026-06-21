@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
+             x:Class="MyCloset.Mobile.Pages.OutfitsPage"
+             Title="My Outfits">
+    
+    <ContentPage.BindingContext>
+        <vm:OutfitsViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Create" Command="{Binding CreateOutfitCommand}" IconImageSource="plus_icon.png" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView Command="{Binding LoadOutfitsCommand}" IsRefreshing="{Binding IsLoading}">
+        <CollectionView ItemsSource="{Binding Outfits}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Record Worn" 
+                                         BackgroundColor="{StaticResource Primary}"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OutfitsViewModel}}, Path=RecordWornCommand}"
+                                         CommandParameter="{Binding .}" />
+                                <SwipeItem Text="Delete" 
+                                         BackgroundColor="Red"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OutfitsViewModel}}, Path=DeleteOutfitCommand}"
+                                         CommandParameter="{Binding .}" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        
+                        <Frame Margin="10,5" Padding="15" CornerRadius="10" HasShadow="True">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding Name}" 
+                                       FontSize="20" 
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding Occasion}" 
+                                       TextColor="{StaticResource Gray600}" />
+                                <Label Text="{Binding Season}" 
+                                       FontSize="12" 
+                                       TextColor="{StaticResource Gray500}" />
+                                <Label Text="{Binding ClothingItems.Count, StringFormat='{0} items'}" 
+                                       FontSize="12" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="No outfits saved yet" 
+                           FontSize="20" 
+                           TextColor="{StaticResource Gray600}" />
+                    <Label Text="Create your first outfit!" 
+                           FontSize="14" 
+                           TextColor="{StaticResource Gray500}" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+
+</ContentPage>

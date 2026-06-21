@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MyCloset.Mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MyCloset.Mobile.Pages"
+    Title="MyCloset"
+    FlyoutBehavior="Flyout">
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{StaticResource Primary}" HeightRequest="200">
+            <Label Text="MyCloset" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="White" 
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="My Closet" Icon="closet_icon.png">
+        <ShellContent Title="Closet" ContentTemplate="{DataTemplate local:ClosetPage}" Route="ClosetPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Outfits" Icon="outfit_icon.png">
+        <ShellContent Title="My Outfits" ContentTemplate="{DataTemplate local:OutfitsPage}" Route="OutfitsPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="AI Recommendations" Icon="ai_icon.png">
+        <ShellContent Title="AI Suggestions" ContentTemplate="{DataTemplate local:AIRecommendationsPage}" Route="AIRecommendationsPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Social Media" Icon="social_icon.png">
+        <ShellContent Title="Social" ContentTemplate="{DataTemplate local:SocialMediaPage}" Route="SocialMediaPage" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Profile" Icon="profile_icon.png">
+        <ShellContent Title="My Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="ProfilePage" />
+    </FlyoutItem>
+
+</Shell>
