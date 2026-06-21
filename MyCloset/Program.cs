@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Azure.Identity;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.OpenApi.Models;
@@ -150,16 +149,4 @@ app.MapControllerRoute(
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My Closet App V1");
     });
 
-app.MapFallbackToFile("index.html");;
-
 app.Run();
-
-app.UseSpa(spa =>
-{
-    spa.Options.SourcePath = "ClientApp";
-
-    if (app.Environment.IsDevelopment())
-    {
-        spa.UseReactDevelopmentServer(npmScript: "start");
-    }
-});
