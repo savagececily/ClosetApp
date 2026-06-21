@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MyCloset.Models.DBModels;
 
+/// <summary>
+/// CosmosDB EF Core DbContext
+/// Uses Microsoft.EntityFrameworkCore.Cosmos provider
+/// Container configuration with partition keys
+/// </summary>
 public partial class MyClosetAppDbContext : DbContext
 {
     public MyClosetAppDbContext()
@@ -15,162 +20,79 @@ public partial class MyClosetAppDbContext : DbContext
     {
     }
 
+    // Container: Users (Partition Key: /id)
+    public virtual DbSet<User> Users { get; set; }
+
+    // Container: ClothingItems (Partition Key: /userId)
     public virtual DbSet<ClothingItem> ClothingItems { get; set; }
 
-    public virtual DbSet<FriendRequestStatus> FriendRequestStatuses { get; set; }
-
-    public virtual DbSet<Friendship> Friendships { get; set; }
-
+    // Container: Outfits (Partition Key: /userId)
     public virtual DbSet<Outfit> Outfits { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
+    // Container: OutfitRecommendations (Partition Key: /userId)
+    public virtual DbSet<OutfitRecommendation> OutfitRecommendations { get; set; }
+
+    // Container: SocialMediaData (Partition Key: /userId) - contains both connections and posts
+    public virtual DbSet<SocialMediaConnection> SocialMediaConnections { get; set; }
+    public virtual DbSet<SocialMediaPost> SocialMediaPosts { get; set; }
+
+    // Container: Friendships (Partition Key: /user1)
+    public virtual DbSet<Friendship> Friendships { get; set; }
+
+    // Legacy/Obsolete - kept for backward compatibility
+    [Obsolete("Use embedded data in Outfit.WornHistory instead")]
+    public virtual DbSet<OutfitHistory>? OutfitHistories { get; set; }
+
+    [Obsolete("Use embedded data in ClothingItem.AIAnalysis instead")]
+    public virtual DbSet<AIImageAnalysis>? AIImageAnalyses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ClothingItem>(entity =>
-        {
-            entity.HasKey(e => e.ClothingItemId).HasName("PK_ClothingItems_ClothingItemID");
+        // Configure CosmosDB containers with partition keys
 
-            entity.Property(e => e.ClothingItemId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("ClothingItemID");
-            entity.Property(e => e.Category)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.DateAdded)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Description)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.LastModified)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.LinkToPhoto)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Tags).IsUnicode(false);
-            entity.Property(e => e.Title)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.UserId).HasColumnName("UserID");
+        // Users Container - Partition by id
+        modelBuilder.Entity<User>()
+            .ToContainer("Users")
+            .HasPartitionKey(u => u.id)
+            .HasNoDiscriminator();
 
-            entity.HasOne(d => d.User).WithMany(p => p.ClothingItems)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ClothingItems_UserID");
-        });
+        // ClothingItems Container - Partition by userId
+        modelBuilder.Entity<ClothingItem>()
+            .ToContainer("ClothingItems")
+            .HasPartitionKey(c => c.UserId)
+            .HasNoDiscriminator();
 
-        modelBuilder.Entity<FriendRequestStatus>(entity =>
-        {
-            entity.HasKey(e => e.StatusId).HasName("PK_FriendRequestStatus_StatusID");
+        // Outfits Container - Partition by userId
+        modelBuilder.Entity<Outfit>()
+            .ToContainer("Outfits")
+            .HasPartitionKey(o => o.UserId)
+            .HasNoDiscriminator();
 
-            entity.ToTable("FriendRequestStatus");
+        // OutfitRecommendations Container - Partition by userId
+        modelBuilder.Entity<OutfitRecommendation>()
+            .ToContainer("OutfitRecommendations")
+            .HasPartitionKey(r => r.UserId)
+            .HasNoDiscriminator();
 
-            entity.Property(e => e.StatusId)
-                .ValueGeneratedNever()
-                .HasColumnName("StatusID");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-        });
+        // SocialMediaData Container - Shared container with type discriminator
+        // Partition by userId
+        modelBuilder.Entity<SocialMediaConnection>()
+            .ToContainer("SocialMediaData")
+            .HasPartitionKey(s => s.UserId)
+            .HasDiscriminator<string>("type")
+            .HasValue<SocialMediaConnection>("SocialMediaConnection");
 
-        modelBuilder.Entity<Friendship>(entity =>
-        {
-            entity.HasKey(e => e.FriendshipId).HasName("PK_Friendship_FriendshipID");
+        modelBuilder.Entity<SocialMediaPost>()
+            .ToContainer("SocialMediaData")
+            .HasPartitionKey(s => s.UserId)
+            .HasDiscriminator<string>("type")
+            .HasValue<SocialMediaPost>("SocialMediaPost");
 
-            entity.ToTable("Friendship");
-
-            entity.Property(e => e.FriendshipId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("FriendshipID");
-
-            entity.HasOne(d => d.RequestStatusNavigation).WithMany(p => p.Friendships)
-                .HasForeignKey(d => d.RequestStatus)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Friendship_RequestStatus");
-
-            entity.HasOne(d => d.RequestedNavigation).WithMany(p => p.FriendshipRequestedNavigations)
-                .HasForeignKey(d => d.User1)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Friendship_Requested");
-
-            entity.HasOne(d => d.RequestorNavigation).WithMany(p => p.FriendshipRequestorNavigations)
-                .HasForeignKey(d => d.User2)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Friendship_Requestor");
-        });
-
-        modelBuilder.Entity<Outfit>(entity =>
-        {
-            entity.HasKey(e => e.OutfitId).HasName("PK__Outfits__399B99D1ED054789");
-
-            entity.Property(e => e.OutfitId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("OutfitID");
-            entity.Property(e => e.DateAdded)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.LastModified)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Tags).IsUnicode(false);
-            entity.Property(e => e.Title)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.UserId).HasColumnName("UserID");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Outfits)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Outfits__UserID__367C1819");
-
-            entity.HasMany(d => d.ClothingItems).WithMany(p => p.Outfits)
-                .UsingEntity<Dictionary<string, object>>(
-                    "OutfitClothingItem",
-                    r => r.HasOne<ClothingItem>().WithMany()
-                        .HasForeignKey("ClothingItemId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_OutfitClothingItems_ClothingItemID"),
-                    l => l.HasOne<Outfit>().WithMany()
-                        .HasForeignKey("OutfitId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_OutfitClothingItems_OutfitID"),
-                    j =>
-                    {
-                        j.HasKey("OutfitId", "ClothingItemId").HasName("PK__OutfitCl__D0A643FCC72F55D1");
-                        j.ToTable("OutfitClothingItems");
-                        j.IndexerProperty<Guid>("OutfitId").HasColumnName("OutfitID");
-                        j.IndexerProperty<Guid>("ClothingItemId").HasColumnName("ClothingItemID");
-                    });
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.UserId).HasName("PK_Users_UserID");
-
-            entity.Property(e => e.UserId)
-                .HasDefaultValueSql("(newid())")
-                .HasColumnName("UserID");
-            entity.Property(e => e.AccountProvider)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.DateAdded)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.DisplayName)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.LastLogin)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.LastModified)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
-        });
+        // Friendships Container - Partition by user1 (requestor)
+        modelBuilder.Entity<Friendship>()
+            .ToContainer("Friendships")
+            .HasPartitionKey(f => f.User1)
+            .HasNoDiscriminator();
 
         OnModelCreatingPartial(modelBuilder);
     }

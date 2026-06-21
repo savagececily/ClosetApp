@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
+             x:Class="MyCloset.Mobile.Pages.LoginPage"
+             Title="Login"
+             Shell.NavBarIsVisible="False">
+    
+    <ContentPage.BindingContext>
+        <vm:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+            
+            <Image Source="closet_logo.png" 
+                   HeightRequest="120" 
+                   WidthRequest="120"
+                   HorizontalOptions="Center" />
+            
+            <Label Text="MyCloset" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" />
+            
+            <Label Text="AI-Powered Closet Management" 
+                   FontSize="16" 
+                   HorizontalOptions="Center" 
+                   TextColor="{StaticResource Gray600}" />
+
+            <Entry Placeholder="Email" 
+                   Text="{Binding Email}"
+                   Keyboard="Email" 
+                   Margin="0,20,0,0" />
+            
+            <Entry Placeholder="Password" 
+                   Text="{Binding Password}"
+                   IsPassword="True" />
+
+            <Button Text="Login" 
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="{StaticResource Primary}" 
+                    TextColor="White" 
+                    HeightRequest="50" />
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                             IsVisible="{Binding IsLoading}" 
+                             Color="{StaticResource Primary}" />
+
+            <Label Text="Or sign in with:" 
+                   HorizontalOptions="Center" 
+                   Margin="0,20,0,10" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="15">
+                <Button Text="Google" 
+                        Command="{Binding LoginWithProviderCommand}"
+                        CommandParameter="Google"
+                        BackgroundColor="#4285F4" 
+                        TextColor="White" />
+                
+                <Button Text="Facebook" 
+                        Command="{Binding LoginWithProviderCommand}"
+                        CommandParameter="Facebook"
+                        BackgroundColor="#1877F2" 
+                        TextColor="White" />
+                
+                <Button Text="Microsoft" 
+                        Command="{Binding LoginWithProviderCommand}"
+                        CommandParameter="Microsoft"
+                        BackgroundColor="#00A4EF" 
+                        TextColor="White" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

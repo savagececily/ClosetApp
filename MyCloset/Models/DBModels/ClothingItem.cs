@@ -1,29 +1,103 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace MyCloset.Models.DBModels;
 
+/// <summary>
+/// CosmosDB ClothingItem Document
+/// Container: ClothingItems
+/// Partition Key: /userId
+/// </summary>
 public partial class ClothingItem
 {
+    /// <summary>
+    /// CosmosDB document id (lowercase required)
+    /// </summary>
+    [JsonProperty("id")]
+    public string id { get; set; } = null!;
+
+    [JsonProperty("clothingItemId")]
     public Guid ClothingItemId { get; set; }
 
-    public string Title { get; set; } = null!;
-
-    public string Description { get; set; } = null!;
-
-    public string Category { get; set; } = null!;
-
-    public string LinkToPhoto { get; set; } = null!;
-
+    /// <summary>
+    /// Partition key - ensures all user's items in same partition
+    /// </summary>
+    [JsonProperty("userId")]
     public Guid UserId { get; set; }
 
-    public string Tags { get; set; } = null!;
+    /// <summary>
+    /// Type discriminator
+    /// </summary>
+    [JsonProperty("type")]
+    public string Type { get; set; } = "ClothingItem";
 
-    public DateTime DateAdded { get; set; }
+    [JsonProperty("title")]
+    public string Title { get; set; } = null!;
 
-    public DateTime LastModified { get; set; }
+    [JsonProperty("description")]
+    public string? Description { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    [JsonProperty("category")]
+    public string Category { get; set; } = null!;
 
-    public virtual ICollection<Outfit> Outfits { get; set; } = new List<Outfit>();
+    [JsonProperty("color")]
+    public string? Color { get; set; }
+
+    [JsonProperty("brand")]
+    public string? Brand { get; set; }
+
+    [JsonProperty("size")]
+    public string? Size { get; set; }
+
+    [JsonProperty("season")]
+    public string? Season { get; set; }
+
+    [JsonProperty("linkToPhoto")]
+    public string LinkToPhoto { get; set; } = null!;
+
+    [JsonProperty("tags")]
+    public List<string> Tags { get; set; } = new();
+
+    [JsonProperty("dateAdded")]
+    public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+
+    [JsonProperty("lastModified")]
+    public DateTime LastModified { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Embedded AI analysis result (always queried together)
+    /// </summary>
+    [JsonProperty("aiAnalysis")]
+    public EmbeddedAIAnalysis? AIAnalysis { get; set; }
+
+    /// <summary>
+    /// ETag for optimistic concurrency
+    /// </summary>
+    [JsonProperty("_etag")]
+    public string? ETag { get; set; }
+}
+
+/// <summary>
+/// Embedded AI analysis data (denormalized for performance)
+/// </summary>
+public class EmbeddedAIAnalysis
+{
+    [JsonProperty("analyzedAt")]
+    public DateTime AnalyzedAt { get; set; }
+
+    [JsonProperty("detectedColors")]
+    public List<string> DetectedColors { get; set; } = new();
+
+    [JsonProperty("detectedPatterns")]
+    public List<string> DetectedPatterns { get; set; } = new();
+
+    [JsonProperty("suggestedTags")]
+    public List<string> SuggestedTags { get; set; } = new();
+
+    [JsonProperty("stylingTips")]
+    public string? StylingTips { get; set; }
+
+    [JsonProperty("confidence")]
+    public double Confidence { get; set; }
 }

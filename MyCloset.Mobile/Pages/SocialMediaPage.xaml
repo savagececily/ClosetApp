@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
+             x:Class="MyCloset.Mobile.Pages.SocialMediaPage"
+             Title="Social Media">
+    
+    <ContentPage.BindingContext>
+        <vm:SocialMediaViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <!-- Connected Accounts Section -->
+            <Label Text="Connected Accounts" 
+                   FontSize="22" 
+                   FontAttributes="Bold" />
+
+            <Button Text="Link Instagram" 
+                    Command="{Binding LinkAccountCommand}"
+                    CommandParameter="Instagram"
+                    BackgroundColor="#E1306C" 
+                    TextColor="White" />
+
+            <Button Text="Link Facebook" 
+                    Command="{Binding LinkAccountCommand}"
+                    CommandParameter="Facebook"
+                    BackgroundColor="#1877F2" 
+                    TextColor="White" />
+
+            <Button Text="Link Twitter" 
+                    Command="{Binding LinkAccountCommand}"
+                    CommandParameter="Twitter"
+                    BackgroundColor="#1DA1F2" 
+                    TextColor="White" />
+
+            <CollectionView ItemsSource="{Binding ConnectedAccounts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Disconnect" 
+                                             BackgroundColor="Red"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SocialMediaViewModel}}, Path=DisconnectAccountCommand}"
+                                             CommandParameter="{Binding .}" />
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            
+                            <Frame Margin="0,5" Padding="15" CornerRadius="10" HasShadow="True">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <VerticalStackLayout Grid.Column="0">
+                                        <Label Text="{Binding Platform}" 
+                                               FontSize="18" 
+                                               FontAttributes="Bold" />
+                                        <Label Text="{Binding Username}" 
+                                               TextColor="{StaticResource Gray600}" />
+                                        <Label Text="{Binding LastSynced, StringFormat='Last synced: {0:MMM dd}'}" 
+                                               FontSize="12" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" 
+                                           Text="✓" 
+                                           FontSize="24" 
+                                           TextColor="Green" 
+                                           IsVisible="{Binding IsActive}" />
+                                </Grid>
+                            </Frame>
+                        </SwipeView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Outfit History Section -->
+            <Label Text="Outfit History" 
+                   FontSize="22" 
+                   FontAttributes="Bold" 
+                   Margin="0,20,0,0" />
+
+            <Button Text="View Analytics" 
+                    Command="{Binding ViewAnalyticsCommand}"
+                    BackgroundColor="{StaticResource Primary}" 
+                    TextColor="White" />
+
+            <RefreshView Command="{Binding LoadOutfitHistoryCommand}" 
+                        IsRefreshing="{Binding IsLoading}">
+                <CollectionView ItemsSource="{Binding OutfitHistory}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Margin="0,5" Padding="15" CornerRadius="10" HasShadow="True">
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="{Binding OutfitName}" 
+                                           FontSize="16" 
+                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding DateWorn, StringFormat='Worn on: {0:MMM dd, yyyy}'}" 
+                                           FontSize="14" />
+                                    <Label Text="{Binding Location}" 
+                                           FontSize="12" 
+                                           TextColor="{StaticResource Gray600}" />
+                                    <Label Text="{Binding Occasion}" 
+                                           FontSize="12" 
+                                           TextColor="{StaticResource Gray500}" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No outfit history yet" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" 
+                               TextColor="{StaticResource Gray600}" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </RefreshView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

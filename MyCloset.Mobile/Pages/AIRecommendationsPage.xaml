@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
+             x:Class="MyCloset.Mobile.Pages.AIRecommendationsPage"
+             Title="AI Recommendations">
+    
+    <ContentPage.BindingContext>
+        <vm:AIRecommendationsViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <Label Text="Get AI-Powered Outfit Suggestions" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" />
+
+            <!-- Occasion Picker -->
+            <Label Text="Occasion:" FontSize="16" />
+            <Picker ItemsSource="{Binding Occasions}" 
+                    SelectedItem="{Binding SelectedOccasion}" 
+                    Title="Select Occasion" />
+
+            <!-- Weather Picker -->
+            <Label Text="Weather:" FontSize="16" />
+            <Picker ItemsSource="{Binding WeatherOptions}" 
+                    SelectedItem="{Binding SelectedWeather}" 
+                    Title="Select Weather" />
+
+            <!-- Season Picker -->
+            <Label Text="Season:" FontSize="16" />
+            <Picker ItemsSource="{Binding Seasons}" 
+                    SelectedItem="{Binding SelectedSeason}" 
+                    Title="Select Season" />
+
+            <!-- Get Recommendations Button -->
+            <Button Text="Get AI Recommendations" 
+                    Command="{Binding GetRecommendationsCommand}"
+                    BackgroundColor="{StaticResource Primary}" 
+                    TextColor="White" 
+                    HeightRequest="50" 
+                    Margin="0,20,0,0" />
+
+            <!-- Wardrobe Gaps Button -->
+            <Button Text="Identify Wardrobe Gaps" 
+                    Command="{Binding IdentifyWardrobeGapsCommand}"
+                    BackgroundColor="{StaticResource Secondary}" 
+                    TextColor="White" 
+                    HeightRequest="50" />
+
+            <!-- Loading Indicator -->
+            <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                             IsVisible="{Binding IsLoading}" 
+                             Color="{StaticResource Primary}"
+                             HeightRequest="50" />
+
+            <!-- Recommendations List -->
+            <Label Text="Recommendations:" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   IsVisible="{Binding Recommendations.Count}" 
+                   Margin="0,20,0,0" />
+
+            <CollectionView ItemsSource="{Binding Recommendations}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5" Padding="15" CornerRadius="10" HasShadow="True">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding Reasoning}" 
+                                       FontSize="14" />
+                                <Label Text="{Binding ConfidenceScore, StringFormat='Confidence: {0}%'}" 
+                                       FontSize="12" 
+                                       TextColor="{StaticResource Gray600}" />
+                                <Label Text="{Binding Items.Count, StringFormat='{0} items in this outfit'}" 
+                                       FontSize="12" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
