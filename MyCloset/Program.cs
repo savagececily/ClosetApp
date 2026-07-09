@@ -66,6 +66,10 @@ builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
 // Add HttpClient for services
 builder.Services.AddHttpClient();
 
+// Add health checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<MyClosetAppDbContext>("cosmosdb", tags: new[] { "db", "ready" });
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -133,6 +137,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors();
 
+// Map health check endpoints
+app.MapHealthChecks("/health");
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => false
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
