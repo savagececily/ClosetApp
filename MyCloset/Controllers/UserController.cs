@@ -30,18 +30,7 @@ namespace MyCloset.Controllers
         [Route("AccountDetails")]
         public async Task<IActionResult> GetUserDetails(Guid userId)
         {
-            try
-            {
-                if (userId == null)
-                {
-
-                    ClosetActionResult? result = await _userService.GetUserDetails(userId);
-                }
-            }
-            catch(Exception ex)
-            {
-
-            }
+            // TODO: Implement this method
             throw new NotImplementedException();
         }
 
@@ -72,7 +61,7 @@ namespace MyCloset.Controllers
         /// <summary>
         /// Delete the current users account from the application
         /// </summary>
-        /// <param name="isPermenant"> True, delete all data. False, save data for 1 year. </param>
+        /// <param name="isPermanent"> True, delete all data. False, save data for 1 year. </param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         [HttpDelete]

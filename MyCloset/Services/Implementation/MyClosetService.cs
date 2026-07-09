@@ -29,7 +29,15 @@ namespace MyCloset.Services.Implementation
             if (clothingItem.Id.HasValue)
             {
                 ClothingItem? existingClothingItem = await _dbContext.ClothingItems
-.                   FirstOrDefaultAsync(x => x.ClothingItemId == clothingItem.Id);
+                    .FirstOrDefaultAsync(x => x.ClothingItemId == clothingItem.Id);
+                if (existingClothingItem == null)
+                {
+                    return new ClosetActionResult
+                    {
+                        StatusCode = HttpStatusCode.NotFound,
+                        Message = $"Clothing item not found."
+                    };
+                }
                 return await UpdateClothingItem(clothingItem, existingClothingItem);
             }
             else
@@ -209,39 +217,16 @@ namespace MyCloset.Services.Implementation
         // TODO: update method to have closet action result
         public async Task<ClosetActionResult> DeleteOutfits(List<Guid> outfitIds, Guid currentUser)
         {
-            throw new NotImplementedException();
             // TODO: Review Cascaded items
             // TODO: validate current user has permission to delete 
-            try
-            {
-                IQueryable<Outfit> outfitsToDelete = _dbContext.Outfits
-                .Where(x => outfitIds.Contains(x.OutfitId));
-
-                _dbContext.Outfits.RemoveRange(outfitsToDelete);
-
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                // TODO: Add Logging and Exception Handling 
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
 
         // TODO: Modify to have a ClosetActionResult
         public async Task<ClosetActionResult> GetClosetItem(Guid clothingItemId)
         {
-            try
-            {
-                ClothingItem? clothingItem = await _dbContext.ClothingItems.FirstOrDefaultAsync(x => x.ClothingItemId == clothingItemId);
-
-                throw new NotImplementedException(); 
-            }
-            catch (Exception ex)
-            {
-                // TODO: Add Logging and Exception Handling 
-                throw new NotImplementedException();
-            }
+            // TODO: Implement this method
+            throw new NotImplementedException();
         }
 
         // TODO: update method to return closet action result
@@ -302,7 +287,7 @@ namespace MyCloset.Services.Implementation
                 Outfit? outfit = await _dbContext.Outfits.FirstOrDefaultAsync(x => x.OutfitId == outfitId);
                 throw new NotImplementedException();
             }
-            catch (Exception ex)
+            catch
             {
                 // TODO: Add Logging and Exception Handling 
                 throw new NotImplementedException();

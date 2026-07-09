@@ -189,6 +189,16 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="ArgumentException"></exception>
         private async Task<ClosetActionResult> RemoveFriend(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
+
             Guid currentUser = friendshipRequest.User1.Value;
             Guid removedFriend = friendshipRequest.User2.Value;
 
@@ -201,7 +211,7 @@ namespace MyCloset.Services.Implementation
                 throw new ArgumentException($"User {currentUser} does not exist.");
             }
 
-            if (removedFriend == null)
+            if (deletedFriendUserModel == null)
             {
                 _logger.LogError($"User {removedFriend} does not exist.");
                 return new ClosetActionResult
@@ -265,12 +275,21 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="ArgumentException"> Thrown if the guid for the current user is invalid. </exception>
         private async Task<ClosetActionResult> BlockUser(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
 
             Guid currentUser = friendshipRequest.User1.Value;
             Guid blockedUser = friendshipRequest.User2.Value;
 
             User? currentUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == currentUser);
-            User? deletedFriendUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == blockedUser);
+            User? blockedUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == blockedUser);
 
             if (currentUserModel == null)
             {
@@ -278,7 +297,7 @@ namespace MyCloset.Services.Implementation
                 throw new ArgumentException($"User {currentUser} does not exist.");
             }
 
-            if (blockedUser == null)
+            if (blockedUserModel == null)
             {
                 _logger.LogError($"User {blockedUser} does not exist.");
                 return new ClosetActionResult
@@ -326,7 +345,7 @@ namespace MyCloset.Services.Implementation
                 return new ClosetActionResult
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Message = $"{deletedFriendUserModel?.DisplayName} was successfully blocked."
+                    Message = $"{blockedUserModel?.DisplayName} was successfully blocked."
                 };
 
             }
@@ -337,7 +356,7 @@ namespace MyCloset.Services.Implementation
                 return new ClosetActionResult
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Oops! Something went wrong while blocking {deletedFriendUserModel?.DisplayName}."
+                    Message = $"Oops! Something went wrong while blocking {blockedUserModel?.DisplayName}."
                 };
             }
         }
@@ -350,11 +369,21 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="ArgumentException"> Thrown if the guid for the current user is invalid. </exception>
         private async Task<ClosetActionResult> UnblockUser(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
+
             Guid currentUser = friendshipRequest.User1.Value;
             Guid unblockedUser = friendshipRequest.User2.Value;
 
             User? currentUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == currentUser);
-            User? deletedFriendUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == unblockedUser);
+            User? unblockedUserModel = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserId == unblockedUser);
 
             if (currentUserModel == null)
             {
@@ -362,7 +391,7 @@ namespace MyCloset.Services.Implementation
                 throw new ArgumentException($"User {currentUser} does not exist.");
             }
 
-            if (unblockedUser == null)
+            if (unblockedUserModel == null)
             {
                 _logger.LogError($"User {unblockedUser} does not exist.");
                 return new ClosetActionResult
@@ -392,7 +421,7 @@ namespace MyCloset.Services.Implementation
                     return new ClosetActionResult
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Message = $"{deletedFriendUserModel?.DisplayName} was successfully blocked."
+                        Message = $"{unblockedUserModel?.DisplayName} was successfully unblocked."
                     };
                 }
                 else
@@ -412,7 +441,7 @@ namespace MyCloset.Services.Implementation
                 return new ClosetActionResult
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = $"Oops! Something went wrong while unblocking {deletedFriendUserModel?.DisplayName}."
+                    Message = $"Oops! Something went wrong while unblocking {unblockedUserModel?.DisplayName}."
                 };
             }
         }
@@ -425,6 +454,16 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="ArgumentException"></exception>
         private async Task<ClosetActionResult> DeclineFriendRequest(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
+
             Guid currentUser = friendshipRequest.User1.Value;
             Guid declinedFriend = friendshipRequest.User2.Value;
 
@@ -510,6 +549,16 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="NotImplementedException"></exception>
         private async Task<ClosetActionResult> AcceptFriendRequest(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
+
             Guid currentUser = friendshipRequest.User1.Value;
             Guid acceptedFriend = friendshipRequest.User2.Value;
 
@@ -594,6 +643,16 @@ namespace MyCloset.Services.Implementation
         /// <exception cref="ArgumentException"></exception>
         private async Task<ClosetActionResult> InitiateFriendRequest(FriendshipRequest friendshipRequest)
         {
+            if (!friendshipRequest.User1.HasValue || !friendshipRequest.User2.HasValue)
+            {
+                _logger.LogError("Invalid friendship request: User1 or User2 is null.");
+                return new ClosetActionResult
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid friendship request."
+                };
+            }
+
             Guid currentUser = friendshipRequest.User1.Value;
             Guid requestedUser = friendshipRequest.User2.Value;
 

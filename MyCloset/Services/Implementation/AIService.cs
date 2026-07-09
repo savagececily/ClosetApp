@@ -18,7 +18,7 @@ public class AIService : IAIService
     private readonly MyClosetAppDbContext _dbContext;
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
-    private readonly AzureOpenAIClient _aiClient;
+    private readonly AzureOpenAIClient? _aiClient;
     private readonly string _modelDeploymentName;
 
     public AIService(
@@ -353,6 +353,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>
@@ -441,6 +446,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>
@@ -539,6 +549,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>
@@ -589,6 +604,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>
@@ -684,6 +704,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>
@@ -730,6 +755,11 @@ public class AIService : IAIService
     {
         try
         {
+            if (_aiClient == null)
+            {
+                throw new InvalidOperationException("AI client is not configured. Please configure Azure OpenAI settings.");
+            }
+
             var chatClient = _aiClient.GetChatClient(_modelDeploymentName);
             
             var messages = new List<ChatMessage>

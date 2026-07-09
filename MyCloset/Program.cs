@@ -92,20 +92,20 @@ builder.Services.AddAuthentication()
    {
        IConfigurationSection googleAuthNSection =
        configuration.GetSection("Authentication:Google");
-       options.ClientId = googleAuthNSection["ClientId"];
-       options.ClientSecret = googleAuthNSection["ClientSecret"];
+       options.ClientId = googleAuthNSection["ClientId"] ?? throw new InvalidOperationException("Google ClientId is not configured");
+       options.ClientSecret = googleAuthNSection["ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret is not configured");
    })
    .AddFacebook(options =>
    {
        IConfigurationSection FBAuthNSection =
        configuration.GetSection("Authentication:FB");
-       options.ClientId = FBAuthNSection["ClientId"];
-       options.ClientSecret = FBAuthNSection["ClientSecret"];
+       options.ClientId = FBAuthNSection["ClientId"] ?? throw new InvalidOperationException("Facebook ClientId is not configured");
+       options.ClientSecret = FBAuthNSection["ClientSecret"] ?? throw new InvalidOperationException("Facebook ClientSecret is not configured");
    })
    .AddMicrosoftAccount(microsoftOptions =>
    {
-       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Microsoft ClientId is not configured");
+       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Microsoft ClientSecret is not configured");
    });
 
 builder.Services.AddSwaggerGen(c =>

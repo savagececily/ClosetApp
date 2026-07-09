@@ -7,7 +7,7 @@ namespace MyCloset.Models.RequestModels
     {
         public Guid? OutfitId { get; set; }
 
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
         public Guid UserId { get; set; }
 

@@ -70,8 +70,18 @@ namespace MyCloset.Controllers
             // Get user information from the external authentication provider
             AuthenticateResult externalUserInfo = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
 
-            string email = externalUserInfo.Principal.FindFirstValue(ClaimTypes.Email);
-            string provider = externalUserInfo.Properties.Items[".AuthScheme"];
+            if (externalUserInfo?.Principal == null)
+            {
+                return BadRequest("Authentication failed.");
+            }
+
+            string? email = externalUserInfo.Principal.FindFirstValue(ClaimTypes.Email);
+            string? provider = externalUserInfo.Properties?.Items[".AuthScheme"];
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(provider))
+            {
+                return BadRequest("Unable to retrieve user information.");
+            }
 
             // Check if the user already exists in your database
             ClosetActionResult result = await _userService.CreateUser(email, provider, displayName);
@@ -85,7 +95,13 @@ namespace MyCloset.Controllers
         public async Task<IActionResult> DeleteUser(Guid userId, bool permanent)
         {
             AuthenticateResult externalUserInfo = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-            string email = externalUserInfo.Principal.FindFirstValue(ClaimTypes.Email);
+            
+            if (externalUserInfo?.Principal == null)
+            {
+                return BadRequest("Authentication failed.");
+            }
+            
+            string? email = externalUserInfo.Principal.FindFirstValue(ClaimTypes.Email);
 
             // TODO: Get user details from user id
             // TODO: Check that emails match

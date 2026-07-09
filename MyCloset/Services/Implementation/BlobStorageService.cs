@@ -14,9 +14,14 @@ namespace MyCloset.Services.Implementation
         public BlobStorageService(ILogger<BlobStorageService> logger, IConfiguration configuration)
         {
             _logger = logger;
-            string connectionString = configuration["AzureBlobStorage"];
+            string? connectionString = configuration["AzureBlobStorage"];
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("AzureBlobStorage configuration is missing");
+            }
             _blobServiceClient = new BlobServiceClient(new Uri(connectionString), new DefaultAzureCredential());
-            _containerName = configuration["BlobContainerName"];
+            
+            _containerName = configuration["BlobContainerName"] ?? "clothing-images";
         }
 
         public async Task<string> UploadImageAsync(Guid userId, string image)

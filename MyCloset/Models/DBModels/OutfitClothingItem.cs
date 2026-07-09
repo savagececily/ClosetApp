@@ -13,10 +13,10 @@ namespace MyCloset.Models.DBModels
         public Guid ClothingItemID { get; set; }
 
         [ForeignKey("OutfitID")]
-        public Outfit Outfit { get; set; }
+        public required Outfit Outfit { get; set; }
 
         [ForeignKey("ClothingItemID")]
-        public ClothingItem ClothingItem { get; set; }
+        public required ClothingItem ClothingItem { get; set; }
     }
 }
 
