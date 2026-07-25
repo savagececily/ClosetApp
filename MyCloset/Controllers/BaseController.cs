@@ -10,8 +10,21 @@ namespace MyCloset.Controllers
     {
         protected async Task<Guid> GetCurrentUserGuid()
         {
-            // TODO: Get the guid from the db using the logged in users email address
-            //return new Guid();
+            // Check for test user header in Development/Staging environments
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (environment == "Development" || environment == "Staging")
+            {
+                if (Request.Headers.TryGetValue("X-Test-User-Id", out var testUserId))
+                {
+                    if (Guid.TryParse(testUserId, out var userId))
+                    {
+                        return userId;
+                    }
+                }
+            }
+
+            // TODO: Get the guid from authentication claims
+            // For now, return hardcoded GUID for backward compatibility
             return Guid.Parse("e85865f7-3c93-4edf-be81-c9dd8c048008");
         }
 

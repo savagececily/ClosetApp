@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.OpenApi.Models;
 using MyCloset.Models.DBModels;
 using MyCloset.Services.Implementation;
@@ -12,27 +11,15 @@ using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = builder.Configuration.AddAzureAppConfiguration(options =>
-{
-    // Check if additional label is available
-    string label = Environment.GetEnvironmentVariable("MyClosetAppEnvironment") ?? "Development";
-
-    // Use environment variable for App Configuration endpoint (set by Azure App Service)
-    var appConfigEndpoint = Environment.GetEnvironmentVariable("AZURE_APP_CONFIG_ENDPOINT") 
-        ?? "https://myclosetapp-appconfig.azconfig.io"; // Fallback for local development
-
-    options.Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
-    .Select(KeyFilter.Any, LabelFilter.Null)
-    .Select(KeyFilter.Any, label);
-})
-.Build();
+// Use configuration from environment variables and appsettings.json
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddDbContext<MyClosetAppDbContext>(options =>
 {
-    var cosmosEndpoint = configuration["CosmosDb:Endpoint"];
-    var cosmosConnectionString = configuration["CosmosDb:ConnectionString"];
-    var databaseName = configuration["CosmosDb:DatabaseName"] ?? "MyClosetDB";
+    var cosmosEndpoint = configuration["CosmosDb:Endpoint"] ?? configuration["CosmosDb__Endpoint"];
+    var cosmosConnectionString = configuration["CosmosDb:ConnectionString"] ?? configuration["CosmosDb__ConnectionString"];
+    var databaseName = configuration["CosmosDb:DatabaseName"] ?? configuration["CosmosDb__DatabaseName"] ?? "MyClosetDB";
 
     // Use managed identity with endpoint if available (production), otherwise use connection string (local dev)
     if (!string.IsNullOrEmpty(cosmosEndpoint))
@@ -87,26 +74,41 @@ builder.Services.AddControllers()
         options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
     });
 
-builder.Services.AddAuthentication()
-   .AddGoogle(options =>
-   {
-       IConfigurationSection googleAuthNSection =
-       configuration.GetSection("Authentication:Google");
-       options.ClientId = googleAuthNSection["ClientId"] ?? throw new InvalidOperationException("Google ClientId is not configured");
-       options.ClientSecret = googleAuthNSection["ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret is not configured");
-   })
-   .AddFacebook(options =>
-   {
-       IConfigurationSection FBAuthNSection =
-       configuration.GetSection("Authentication:FB");
-       options.ClientId = FBAuthNSection["ClientId"] ?? throw new InvalidOperationException("Facebook ClientId is not configured");
-       options.ClientSecret = FBAuthNSection["ClientSecret"] ?? throw new InvalidOperationException("Facebook ClientSecret is not configured");
-   })
-   .AddMicrosoftAccount(microsoftOptions =>
-   {
-       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Microsoft ClientId is not configured");
-       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Microsoft ClientSecret is not configured");
-   });
+// Authentication providers (optional for POC - can be configured later via environment variables)
+var authBuilder = builder.Services.AddAuthentication();
+
+var googleClientId = configuration["Authentication:Google:ClientId"] ?? configuration["Authentication__Google__ClientId"];
+var googleClientSecret = configuration["Authentication:Google:ClientSecret"] ?? configuration["Authentication__Google__ClientSecret"];
+if (!string.IsNullOrEmpty(googleClientId) && !string.IsNullOrEmpty(googleClientSecret))
+{
+    authBuilder.AddGoogle(options =>
+    {
+        options.ClientId = googleClientId;
+        options.ClientSecret = googleClientSecret;
+    });
+}
+
+var fbClientId = configuration["Authentication:FB:ClientId"] ?? configuration["Authentication__FB__ClientId"];
+var fbClientSecret = configuration["Authentication:FB:ClientSecret"] ?? configuration["Authentication__FB__ClientSecret"];
+if (!string.IsNullOrEmpty(fbClientId) && !string.IsNullOrEmpty(fbClientSecret))
+{
+    authBuilder.AddFacebook(options =>
+    {
+        options.ClientId = fbClientId;
+        options.ClientSecret = fbClientSecret;
+    });
+}
+
+var msClientId = configuration["Authentication:Microsoft:ClientId"] ?? configuration["Authentication__Microsoft__ClientId"];
+var msClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? configuration["Authentication__Microsoft__ClientSecret"];
+if (!string.IsNullOrEmpty(msClientId) && !string.IsNullOrEmpty(msClientSecret))
+{
+    authBuilder.AddMicrosoftAccount(options =>
+    {
+        options.ClientId = msClientId;
+        options.ClientSecret = msClientSecret;
+    });
+}
 
 builder.Services.AddSwaggerGen(c =>
 {

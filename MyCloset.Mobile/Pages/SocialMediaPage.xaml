@@ -4,10 +4,6 @@
              xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
              x:Class="MyCloset.Mobile.Pages.SocialMediaPage"
              Title="Social Media">
-    
-    <ContentPage.BindingContext>
-        <vm:SocialMediaViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">

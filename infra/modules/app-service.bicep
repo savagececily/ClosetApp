@@ -7,9 +7,6 @@ param location string = resourceGroup().location
 @description('Tags to apply to the resource')
 param tags object = {}
 
-@description('App Configuration endpoint')
-param appConfigEndpoint string
-
 @description('CosmosDB endpoint')
 param cosmosDbEndpoint string
 
@@ -19,8 +16,8 @@ param cosmosDbDatabaseName string
 @description('Storage account name')
 param storageAccountName string
 
-@description('Azure OpenAI endpoint')
-param openAiEndpoint string
+@description('Azure OpenAI endpoint (optional)')
+param openAiEndpoint string = ''
 
 @description('Key Vault name')
 param keyVaultName string
@@ -48,7 +45,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
 resource appService 'Microsoft.Web/sites@2022-09-01' = {
   name: appServiceName
   location: location
-  tags: tags
+  tags: union(tags, {
+    'azd-service-name': 'api'
+  })
   identity: {
     type: 'SystemAssigned'
   }
@@ -56,7 +55,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNET|9.0'
       alwaysOn: appServicePlanSku != 'B1' // Always On not available on Basic tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
@@ -64,11 +63,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Production'
-        }
-        {
-          name: 'AZURE_APP_CONFIG_ENDPOINT'
-          value: appConfigEndpoint
+          value: 'Staging'
         }
         {
           name: 'CosmosDb__Endpoint'

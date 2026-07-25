@@ -94,6 +94,13 @@ public partial class MyClosetAppDbContext : DbContext
             .HasPartitionKey(f => f.User1)
             .HasNoDiscriminator();
 
+        // Legacy/Obsolete entities - configure as keyless since they're not used
+        modelBuilder.Entity<OutfitHistory>()
+            .HasNoKey();
+
+        modelBuilder.Entity<AIImageAnalysis>()
+            .HasNoKey();
+
         OnModelCreatingPartial(modelBuilder);
     }
 

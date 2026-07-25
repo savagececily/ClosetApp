@@ -5,10 +5,6 @@
              x:Class="MyCloset.Mobile.Pages.LoginPage"
              Title="Login"
              Shell.NavBarIsVisible="False">
-    
-    <ContentPage.BindingContext>
-        <vm:LoginViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
