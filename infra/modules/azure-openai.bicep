@@ -27,10 +27,10 @@ resource openAiAccount 'Microsoft.CognitiveServices/accounts@2023-05-01' = {
   }
 }
 
-// Deploy GPT-4 model for outfit recommendations and AI analysis
-resource gpt4Deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = {
+// Deploy GPT-4o-mini model (includes both text and vision capabilities, cost-effective)
+resource gpt4oMiniDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = {
   parent: openAiAccount
-  name: 'gpt-4'
+  name: 'gpt-4o-mini'
   sku: {
     name: 'Standard'
     capacity: 10
@@ -38,30 +38,10 @@ resource gpt4Deployment 'Microsoft.CognitiveServices/accounts/deployments@2023-0
   properties: {
     model: {
       format: 'OpenAI'
-      name: 'gpt-4'
-      version: 'turbo-2024-04-09'
+      name: 'gpt-4o-mini'
+      version: '2024-07-18'
     }
   }
-}
-
-// Deploy GPT-4 Vision model for image analysis
-resource gpt4VisionDeployment 'Microsoft.CognitiveServices/accounts/deployments@2023-05-01' = {
-  parent: openAiAccount
-  name: 'gpt-4-vision'
-  sku: {
-    name: 'Standard'
-    capacity: 10
-  }
-  properties: {
-    model: {
-      format: 'OpenAI'
-      name: 'gpt-4'
-      version: 'vision-preview'
-    }
-  }
-  dependsOn: [
-    gpt4Deployment
-  ]
 }
 
 output id string = openAiAccount.id

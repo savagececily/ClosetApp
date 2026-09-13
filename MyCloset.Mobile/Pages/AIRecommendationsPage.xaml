@@ -4,10 +4,6 @@
              xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
              x:Class="MyCloset.Mobile.Pages.AIRecommendationsPage"
              Title="AI Recommendations">
-    
-    <ContentPage.BindingContext>
-        <vm:AIRecommendationsViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">

@@ -4,10 +4,6 @@
              xmlns:vm="clr-namespace:MyCloset.Mobile.ViewModels"
              x:Class="MyCloset.Mobile.Pages.ClosetPage"
              Title="My Closet">
-    
-    <ContentPage.BindingContext>
-        <vm:ClosetViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add Item" Command="{Binding AddItemCommand}" IconImageSource="plus_icon.png" />

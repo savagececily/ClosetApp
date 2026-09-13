@@ -10,16 +10,16 @@
 ## Project Overview
 
 **Application**: MyCloset - Wardrobe management application  
-**Tech Stack**: ASP.NET Core 8.0 Web API with .NET MAUI mobile client  
+**Tech Stack**: ASP.NET Core 10.0 Web API with .NET MAUI 10.0 mobile client
 **Database**: Azure Cosmos DB (NoSQL)  
-**.NET Version**: .NET 8 (LTS, supported until November 2026)  
+**.NET Version**: .NET 10
 
 ---
 
 ## Current State
 
-- ✅ ASP.NET Core 8.0 Web API
-- ✅ Upgraded to .NET 8 LTS (from .NET 7)
+- ✅ ASP.NET Core 10.0 Web API
+- ✅ Upgraded to .NET 10 (from .NET 9)
 - ✅ CosmosDB models fully converted
 - ✅ Service layer updated for CosmosDB
 - ✅ Application builds successfully (0 errors)
@@ -34,19 +34,18 @@
 
 ## Goals
 
-1. Add Azure App Configuration support for centralized configuration management
-2. Create Bicep templates for infrastructure as code
-3. Prepare application for Azure deployment
+1. Keep Azure App Configuration support aligned with the .NET 10 API
+2. Keep Bicep templates aligned with the .NET 10 App Service runtime
+3. Deploy the upgraded API through a previewed, staged Azure rollout
 
 ---
 
 ## Analysis (Completed)
 
-### Step 1: Workspace Analysis8.0 API
+### Step 1: Workspace Analysis
 - Azure App Configuration **already integrated** in code (needs infrastructure)
-- Primary project: MyCloset.csproj (ASP.NET Core 8
+- Primary project: MyCloset.csproj (ASP.NET Core 10.0 Web API)
 - Azure App Configuration **already integrated** in code (needs infrastructure)
-- Primary project: MyCloset.csproj (ASP.NET Core 7.0 Web API)
 - Additional project: MyCloset.Mobile.csproj (.NET MAUI - mobile client)
 
 ### Step 2: Requirements Gathering
@@ -84,7 +83,7 @@
 
 **Azure Resources to Provision:**
 
-1. **Azure App Service** (Linux, .NET 8)
+1. **Azure App Service** (Linux, .NET 10)
    - Hosts the ASP.NET Core Web API
    - Managed identity enabled for secure access to other services
    - Basic B1 tier (testing), upgrade to Standard S1 (production)

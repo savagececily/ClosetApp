@@ -1,8 +1,8 @@
 # MyCloset - AI-Powered Wardrobe Management
 
-A full-stack wardrobe management application with AI-powered outfit recommendations, built with ASP.NET Core 8.0 and .NET MAUI.
+A full-stack wardrobe management application with AI-powered outfit recommendations, built with ASP.NET Core 10.0 and .NET MAUI.
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Azure](https://img.shields.io/badge/Azure-Ready-0078D4?logo=microsoft-azure)](https://azure.microsoft.com)
 [![CosmosDB](https://img.shields.io/badge/CosmosDB-NoSQL-2D9CDB)](https://azure.microsoft.com/services/cosmos-db/)
 
@@ -24,7 +24,7 @@ MyCloset helps you organize your wardrobe, create outfits, and get AI-powered st
 
 \`\`\`
 MyCloset/
-├── MyCloset/                    # ASP.NET Core 8.0 Web API
+├── MyCloset/                    # ASP.NET Core 10.0 Web API
 │   ├── Controllers/             # REST API endpoints
 │   ├── Services/                # Business logic layer
 │   ├── Models/                  # CosmosDB document models
@@ -44,7 +44,7 @@ MyCloset/
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Azure subscription](https://azure.microsoft.com/free/) (for deployment)
 - [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) (for deployment)
 
@@ -98,7 +98,7 @@ azd up
 \`\`\`
 
 This deploys:
-- ✅ App Service (Linux, .NET 8)
+- ✅ App Service (Linux, .NET 10)
 - ✅ CosmosDB (NoSQL, 6 containers)
 - ✅ Storage Account (blob storage)
 - ✅ App Configuration
@@ -111,8 +111,8 @@ See [Deployment Guide](infra/README.md) for detailed instructions.
 
 ## 🏗️ Architecture
 
-### Backend API (.NET 8)
-- **Framework**: ASP.NET Core 8.0 Web API
+### Backend API (.NET 10)
+- **Framework**: ASP.NET Core 10.0 Web API
 - **Database**: Azure CosmosDB NoSQL (6 containers)
 - **Storage**: Azure Blob Storage (images)
 - **AI**: Azure OpenAI (GPT-4, GPT-4 Vision)
@@ -124,7 +124,7 @@ See [Deployment Guide](infra/README.md) for detailed instructions.
 - **Platforms**: iOS, Android, macOS Catalyst, Windows
 - **Architecture**: MVVM with CommunityToolkit.Mvvm
 - **HTTP Client**: REST API integration
-- **Target**: .NET 7.0 (planned upgrade to .NET 8)
+- **Target**: .NET 10.0
 
 ### Database Schema
 
@@ -161,17 +161,17 @@ See [CosmosDB Architecture](docs/COSMOSDB_ARCHITECTURE.md) for details.
 
 | Component | Status | Version |
 |-----------|--------|---------|
-| Backend API | ✅ Ready | .NET 8.0 LTS |
+| Backend API | ✅ Ready | .NET 10.0 |
 | CosmosDB Models | ✅ Optimized | Partition keys configured |
 | Azure Infrastructure | ✅ Ready | Bicep templates complete |
-| Mobile App | 🚧 In Progress | .NET MAUI 7.0 |
+| Mobile App | 🚧 In Progress | .NET MAUI 10.0 |
 | Deployment | ✅ Ready | azd up works |
 
 **Build Status**: ✅ 0 errors, 90 warnings (nullable reference warnings)
 
 ## 🎯 Roadmap
 
-- [ ] Upgrade Mobile app to .NET 8
+- [x] Upgrade API and mobile app to .NET 10
 - [ ] Add Application Insights telemetry
 - [ ] Implement zone redundancy for production
 - [ ] Add health endpoints for monitoring

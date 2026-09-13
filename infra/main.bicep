@@ -18,14 +18,12 @@ param cosmosDbAccountName string = ''
 @description('Name of the Storage Account')
 param storageAccountName string = ''
 
-@description('Name of the App Configuration')
-param appConfigName string = ''
-
 @description('Name of the Key Vault')
 param keyVaultName string = ''
 
-@description('Name of the Azure OpenAI account')
-param openAiAccountName string = ''
+// Azure OpenAI - Disabled: Use Azure AI Foundry instead
+// @description('Name of the Azure OpenAI account')
+// param openAiAccountName string = ''
 
 @description('Id of the principal to grant Key Vault access')
 param principalId string = ''
@@ -65,18 +63,7 @@ module storage './modules/storage-account.bicep' = {
   }
 }
 
-// App Configuration for centralized configuration
-module appConfig './modules/app-configuration.bicep' = {
-  name: 'appconfig-deployment'
-  scope: rg
-  params: {
-    appConfigName: !empty(appConfigName) ? appConfigName : 'appconfig-${uniqueString(rg.id)}'
-    location: location
-    tags: tags
-  }
-}
-
-// Key Vault for secrets
+// Key Vault for secrets (optional for POC)
 module keyVault './modules/key-vault.bicep' = {
   name: 'keyvault-deployment'
   scope: rg
@@ -88,16 +75,16 @@ module keyVault './modules/key-vault.bicep' = {
   }
 }
 
-// Azure OpenAI for AI-powered features
-module openAi './modules/azure-openai.bicep' = {
-  name: 'openai-deployment'
-  scope: rg
-  params: {
-    accountName: !empty(openAiAccountName) ? openAiAccountName : 'openai-${uniqueString(rg.id)}'
-    location: location
-    tags: tags
-  }
-}
+// Azure OpenAI for AI-powered features - DISABLED: Models deprecated, can be enabled later
+// module openAi './modules/azure-openai.bicep' = {
+//   name: 'openai-deployment'
+//   scope: rg
+//   params: {
+//     accountName: !empty(openAiAccountName) ? openAiAccountName : 'openai-${uniqueString(rg.id)}'
+//     location: location
+//     tags: tags
+//   }
+// }
 
 // App Service Plan and App Service for hosting the API
 module appService './modules/app-service.bicep' = {
@@ -107,11 +94,10 @@ module appService './modules/app-service.bicep' = {
     appServiceName: !empty(appServiceName) ? appServiceName : 'app-${uniqueString(rg.id)}'
     location: location
     tags: tags
-    appConfigEndpoint: appConfig.outputs.endpoint
     cosmosDbEndpoint: cosmosDb.outputs.endpoint
     cosmosDbDatabaseName: cosmosDb.outputs.databaseName
     storageAccountName: storage.outputs.name
-    openAiEndpoint: openAi.outputs.endpoint
+    openAiEndpoint: '' // OpenAI disabled
     keyVaultName: keyVault.outputs.name
   }
 }
@@ -122,10 +108,9 @@ module appServiceRoleAssignments './modules/role-assignments.bicep' = {
   scope: rg
   params: {
     appServicePrincipalId: appService.outputs.managedIdentityPrincipalId
-    appConfigName: appConfig.outputs.name
     cosmosDbAccountName: cosmosDb.outputs.accountName
     storageAccountName: storage.outputs.name
-    openAiAccountName: openAi.outputs.accountName
+    openAiAccountName: '' // OpenAI disabled - use Foundry instead
     keyVaultName: keyVault.outputs.name
   }
 }
@@ -145,9 +130,8 @@ output AZURE_COSMOS_DB_DATABASE_NAME string = cosmosDb.outputs.databaseName
 output AZURE_STORAGE_ACCOUNT_NAME string = storage.outputs.name
 output AZURE_STORAGE_BLOB_ENDPOINT string = storage.outputs.blobEndpoint
 
-output AZURE_APP_CONFIG_ENDPOINT string = appConfig.outputs.endpoint
-
-output AZURE_OPENAI_ENDPOINT string = openAi.outputs.endpoint
+// Azure OpenAI - Disabled: Use Azure AI Foundry instead
+// output AZURE_OPENAI_ENDPOINT string = openAi.outputs.endpoint
 
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
