@@ -5,7 +5,7 @@ This guide walks you through deploying the MyCloset application to Azure using A
 ## Prerequisites
 
 - [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd) installed
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) installed
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) installed
 - An Azure subscription with appropriate permissions
 - Azure CLI logged in: `az login`
 

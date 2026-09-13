@@ -55,7 +55,7 @@ resource appService 'Microsoft.Web/sites@2022-09-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'DOTNET|9.0'
+      linuxFxVersion: 'DOTNET|10.0'
       alwaysOn: appServicePlanSku != 'B1' // Always On not available on Basic tier
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'

@@ -1,6 +1,6 @@
 # MyCloset Mobile App (.NET MAUI)
 
-A cross-platform mobile application for iOS and Android built with .NET MAUI 7.0, featuring AI-powered outfit recommendations, closet management, and social media integration.
+A cross-platform mobile application for iOS and Android built with .NET MAUI 10.0, featuring AI-powered outfit recommendations, closet management, and social media integration.
 
 ## 🌟 Features
 
@@ -67,7 +67,7 @@ MyCloset.Mobile/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- .NET 7.0 SDK or later
+- .NET 10 SDK
 - Visual Studio 2022 (17.4+) for Windows or Visual Studio 2022 for Mac
 - For iOS development: Xcode 14.0+ and a Mac
 - For Android development: Android SDK 21+ (Android 5.0+)
@@ -116,12 +116,12 @@ dotnet build
 
 #### Run on Android Emulator
 ```bash
-dotnet build -t:Run -f:net7.0-android
+dotnet build -t:Run -f:net10.0-android
 ```
 
 #### Run on iOS Simulator (macOS only)
 ```bash
-dotnet build -t:Run -f:net7.0-ios
+dotnet build -t:Run -f:net10.0-ios
 ```
 
 #### Using Visual Studio
@@ -303,7 +303,7 @@ sudo dotnet workload install maui
 
 2. **Create release build**:
 ```bash
-dotnet publish -f:net7.0-android -c:Release
+dotnet publish -f:net10.0-android -c:Release
 ```
 
 3. **Sign APK/AAB**:

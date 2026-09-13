@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Azure.Cosmos;
 using Microsoft.OpenApi.Models;
 using MyCloset.Models.DBModels;
 using MyCloset.Services.Implementation;
 using MyCloset.Services.Interfaces;
+using MyCloset.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -43,6 +45,24 @@ builder.Services.AddDbContext<MyClosetAppDbContext>(options =>
     }
 });
 
+builder.Services.AddSingleton(sp =>
+{
+    var cosmosEndpoint = configuration["CosmosDb:Endpoint"] ?? configuration["CosmosDb__Endpoint"];
+    var cosmosConnectionString = configuration["CosmosDb:ConnectionString"] ?? configuration["CosmosDb__ConnectionString"];
+
+    if (!string.IsNullOrEmpty(cosmosEndpoint))
+    {
+        return new CosmosClient(cosmosEndpoint, new DefaultAzureCredential());
+    }
+
+    if (!string.IsNullOrEmpty(cosmosConnectionString))
+    {
+        return new CosmosClient(cosmosConnectionString);
+    }
+
+    throw new InvalidOperationException("CosmosDB configuration is missing. Provide either CosmosDb:Endpoint or CosmosDb:ConnectionString.");
+});
+
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IMyClosetService, MyClosetService>();
 builder.Services.AddTransient<IFriendService, FriendService>();
@@ -55,7 +75,7 @@ builder.Services.AddHttpClient();
 
 // Add health checks
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<MyClosetAppDbContext>("cosmosdb", tags: new[] { "db", "ready" });
+    .AddCheck<CosmosHealthCheck>("cosmosdb", tags: new[] { "db", "ready" });
 
 builder.Services.AddCors(options =>
 {
